@@ -1,0 +1,488 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Plantita de Agenda</title>
+
+  <style>
+    :root{
+      --bg:#0b0a0f;
+      --panel:#15131c;
+      --text:#f7f4fb;
+      --muted:#aaa2b8;
+      --purple:#a855f7;
+      --purple-2:#7c3aed;
+      --purple-soft:#d8b4fe;
+      --border:rgba(255,255,255,.09);
+      --green:#83d7a3;
+      --green-2:#5ea97b;
+      --soil:#5a4036;
+      --pot:#8f6ad9;
+    }
+
+    *{box-sizing:border-box}
+
+    html,body{
+      margin:0;
+      min-height:100%;
+      font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+      background:transparent;
+      color:var(--text);
+    }
+
+    body{padding:8px}
+
+    .widget{
+      position:relative;
+      width:min(100%,900px);
+      min-height:350px;
+      margin:auto;
+      overflow:hidden;
+      border:1px solid var(--border);
+      border-radius:24px;
+      background:
+        radial-gradient(circle at 50% 20%, rgba(168,85,247,.12), transparent 26%),
+        radial-gradient(circle at 88% 12%, rgba(168,85,247,.13), transparent 23%),
+        radial-gradient(circle at 10% 90%, rgba(124,58,237,.10), transparent 24%),
+        linear-gradient(145deg,var(--panel),var(--bg));
+      box-shadow:0 18px 50px rgba(0,0,0,.28);
+      padding:18px;
+    }
+
+    .eyebrow{
+      color:var(--purple-soft);
+      font-size:12px;
+      font-weight:850;
+      letter-spacing:.09em;
+      text-transform:uppercase;
+    }
+
+    .date{
+      margin-top:5px;
+      color:var(--muted);
+      font-size:13px;
+    }
+
+    .content{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:18px;
+      align-items:center;
+      min-height:290px;
+    }
+
+    .copy{
+      padding:12px 8px 12px 4px;
+    }
+
+    h1{
+      margin:0;
+      font-size:clamp(30px,5vw,48px);
+      line-height:1.06;
+      letter-spacing:-.04em;
+    }
+
+    .message{
+      margin-top:14px;
+      max-width:470px;
+      color:var(--muted);
+      font-size:16px;
+      line-height:1.55;
+      transition:opacity .25s ease, transform .25s ease;
+    }
+
+    .message.fade{
+      opacity:0;
+      transform:translateY(5px);
+    }
+
+    .tiny{
+      margin-top:16px;
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding:9px 12px;
+      border-radius:999px;
+      background:rgba(255,255,255,.035);
+      border:1px solid var(--border);
+      color:var(--purple-soft);
+      font-size:12px;
+      font-weight:750;
+    }
+
+    .garden{
+      position:relative;
+      min-height:250px;
+      display:grid;
+      place-items:center;
+    }
+
+    .halo{
+      position:absolute;
+      width:200px;
+      height:200px;
+      border-radius:50%;
+      background:radial-gradient(circle, rgba(168,85,247,.17), transparent 65%);
+      filter:blur(2px);
+      animation:breathe 4s ease-in-out infinite;
+    }
+
+    .plant{
+      position:relative;
+      width:180px;
+      height:230px;
+      transform-origin:center bottom;
+      animation:sway 4.4s ease-in-out infinite;
+      cursor:pointer;
+      user-select:none;
+    }
+
+    .stem{
+      position:absolute;
+      left:87px;
+      bottom:72px;
+      width:6px;
+      height:var(--stem-height,88px);
+      border-radius:999px;
+      background:linear-gradient(180deg,var(--green),var(--green-2));
+      transform-origin:bottom;
+      transition:height .5s ease;
+    }
+
+    .leaf{
+      position:absolute;
+      width:58px;
+      height:30px;
+      background:linear-gradient(135deg,#94e4b1,#5ea97b);
+      border-radius:100% 0 100% 0;
+      box-shadow:inset 0 0 10px rgba(255,255,255,.10);
+      opacity:0;
+      transform:scale(.5);
+      transition:opacity .45s ease, transform .45s ease;
+    }
+
+    .leaf.show{
+      opacity:1;
+      transform:scale(1);
+    }
+
+    .leaf.left{
+      left:36px;
+      transform-origin:right center;
+    }
+
+    .leaf.right{
+      right:31px;
+      transform:rotate(90deg) scale(.5);
+      transform-origin:left center;
+    }
+
+    .leaf.right.show{
+      transform:rotate(90deg) scale(1);
+    }
+
+    .leaf.one{bottom:108px}
+    .leaf.two{bottom:138px}
+    .leaf.three{bottom:168px}
+    .leaf.four{bottom:194px}
+
+    .bud{
+      position:absolute;
+      left:70px;
+      bottom:157px;
+      width:44px;
+      height:44px;
+      border-radius:50%;
+      background:
+        radial-gradient(circle at 35% 30%, rgba(255,255,255,.45), transparent 18%),
+        radial-gradient(circle, #d8b4fe, #a855f7 64%, #7c3aed);
+      box-shadow:0 0 22px rgba(168,85,247,.30);
+      opacity:0;
+      transform:scale(.4);
+      transition:opacity .45s ease, transform .45s ease;
+    }
+
+    .bud.show{
+      opacity:1;
+      transform:scale(1);
+    }
+
+    .pot{
+      position:absolute;
+      left:52px;
+      bottom:22px;
+      width:78px;
+      height:62px;
+      background:linear-gradient(180deg,#a684e4,var(--pot));
+      clip-path:polygon(8% 0,92% 0,80% 100%,20% 100%);
+      border-radius:0 0 18px 18px;
+      box-shadow:0 14px 22px rgba(0,0,0,.20);
+    }
+
+    .rim{
+      position:absolute;
+      left:46px;
+      bottom:72px;
+      width:90px;
+      height:18px;
+      border-radius:10px;
+      background:linear-gradient(180deg,#b799ec,#8f6ad9);
+      border:1px solid rgba(255,255,255,.09);
+    }
+
+    .soil{
+      position:absolute;
+      left:56px;
+      bottom:75px;
+      width:70px;
+      height:8px;
+      border-radius:50%;
+      background:#5a4036;
+      opacity:.92;
+    }
+
+    .spark{
+      position:absolute;
+      width:6px;
+      height:6px;
+      border-radius:50%;
+      background:var(--purple-soft);
+      box-shadow:0 0 10px rgba(216,180,254,.85);
+      pointer-events:none;
+      animation:floatUp 1.4s ease-out forwards;
+    }
+
+    .tip{
+      position:absolute;
+      right:16px;
+      bottom:14px;
+      color:var(--muted);
+      font-size:11px;
+      opacity:.75;
+    }
+
+    @keyframes sway{
+      0%,100%{transform:rotate(-1.5deg)}
+      50%{transform:rotate(1.5deg)}
+    }
+
+    @keyframes breathe{
+      0%,100%{transform:scale(.96);opacity:.7}
+      50%{transform:scale(1.04);opacity:1}
+    }
+
+    @keyframes floatUp{
+      0%{opacity:0;transform:translateY(0) scale(.5)}
+      20%{opacity:1}
+      100%{opacity:0;transform:translateY(-55px) scale(1)}
+    }
+
+    @media(max-width:650px){
+      .content{
+        grid-template-columns:1fr;
+        gap:2px;
+      }
+
+      .copy{
+        text-align:center;
+      }
+
+      .message{
+        margin-left:auto;
+        margin-right:auto;
+      }
+
+      .tiny{
+        margin-left:auto;
+        margin-right:auto;
+      }
+
+      .garden{
+        min-height:235px;
+      }
+
+      .widget{
+        min-height:520px;
+      }
+
+      .tip{display:none}
+    }
+  </style>
+</head>
+
+<body>
+  <main class="widget">
+    <div class="eyebrow">🌱 Agenda</div>
+    <div class="date" id="date"></div>
+
+    <section class="content">
+      <div class="copy">
+        <h1 id="greeting">Hoy también estás creciendo.</h1>
+
+        <div class="message" id="message">
+          No necesitas terminar todo hoy. Solo avanzar un poquito.
+        </div>
+
+        <div class="tiny" id="growthLabel">
+          🌿 Creciendo a tu ritmo
+        </div>
+      </div>
+
+      <div class="garden">
+        <div class="halo"></div>
+
+        <div class="plant" id="plant" title="Haz clic para regarla">
+          <div class="stem" id="stem"></div>
+
+          <div class="leaf left one" data-stage="1"></div>
+          <div class="leaf right two" data-stage="2"></div>
+          <div class="leaf left three" data-stage="3"></div>
+          <div class="leaf right four" data-stage="4"></div>
+
+          <div class="bud" id="bud"></div>
+
+          <div class="soil"></div>
+          <div class="rim"></div>
+          <div class="pot"></div>
+        </div>
+      </div>
+    </section>
+
+    <div class="tip">Haz clic en la plantita para regarla ✦</div>
+  </main>
+
+  <script>
+    const dateEl = document.getElementById("date");
+    const greetingEl = document.getElementById("greeting");
+    const messageEl = document.getElementById("message");
+    const growthLabel = document.getElementById("growthLabel");
+    const plant = document.getElementById("plant");
+    const stem = document.getElementById("stem");
+    const bud = document.getElementById("bud");
+
+    const messages = {
+      morning: [
+        "Empieza con calma. El día todavía tiene espacio.",
+        "Hoy no tienes que correr. Solo comenzar.",
+        "Un bloque a la vez también es avanzar."
+      ],
+      afternoon: [
+        "Ya avanzaste más de lo que parece.",
+        "Respira, revisa tu agenda y sigue con lo siguiente.",
+        "Todavía queda tiempo, pero no hace falta hacerlo todo."
+      ],
+      evening: [
+        "Cierra el día sin pelearte con lo que quedó pendiente.",
+        "Lo que no termine hoy puede continuar mañana.",
+        "También es progreso saber cuándo parar."
+      ],
+      night: [
+        "Las ideas de noche cuentan, pero descansar también.",
+        "Anota lo importante y deja que mañana siga creciendo.",
+        "No necesitas resolverlo todo antes de dormir."
+      ]
+    };
+
+    function setDate(){
+      const now = new Date();
+      dateEl.textContent = now.toLocaleDateString("es-PE", {
+        weekday:"long",
+        day:"numeric",
+        month:"long"
+      });
+    }
+
+    function getPeriod(){
+      const hour = new Date().getHours();
+      if(hour < 12) return "morning";
+      if(hour < 18) return "afternoon";
+      if(hour < 22) return "evening";
+      return "night";
+    }
+
+    function applyTimeMessage(){
+      const period = getPeriod();
+
+      const greetings = {
+        morning:"Buenos días. Hoy también estás creciendo.",
+        afternoon:"Vas bien. Sigue a tu ritmo.",
+        evening:"Ya hiciste bastante por hoy.",
+        night:"La agenda puede esperar un poquito."
+      };
+
+      const options = messages[period];
+      const choice = options[new Date().getDate() % options.length];
+
+      greetingEl.textContent = greetings[period];
+      messageEl.textContent = choice;
+    }
+
+    function growthStage(){
+      const start = new Date(new Date().getFullYear(), 0, 1);
+      const today = new Date();
+      const days = Math.floor((today - start) / 86400000);
+      return (days % 5) + 1;
+    }
+
+    function applyGrowth(){
+      const stage = growthStage();
+      stem.style.setProperty("--stem-height", `${58 + stage * 14}px`);
+
+      document.querySelectorAll(".leaf").forEach(leaf => {
+        const leafStage = Number(leaf.dataset.stage);
+        leaf.classList.toggle("show", leafStage <= stage);
+      });
+
+      bud.classList.toggle("show", stage === 5);
+
+      const labels = [
+        "🌱 Apenas empezando",
+        "🌿 Echando raíces",
+        "🍃 Tomando forma",
+        "🪴 Creciendo firme",
+        "✨ Floreciendo"
+      ];
+
+      growthLabel.textContent = labels[stage - 1];
+    }
+
+    function sparkle(){
+      for(let i=0;i<7;i++){
+        const s = document.createElement("span");
+        s.className = "spark";
+        s.style.left = `${72 + Math.random()*38}px`;
+        s.style.top = `${58 + Math.random()*90}px`;
+        plant.appendChild(s);
+        setTimeout(() => s.remove(), 1500);
+      }
+    }
+
+    function waterPlant(){
+      sparkle();
+
+      messageEl.classList.add("fade");
+
+      setTimeout(() => {
+        messageEl.textContent = "Un poquito de atención también hace crecer las cosas.";
+        messageEl.classList.remove("fade");
+      }, 180);
+
+      plant.animate(
+        [
+          {transform:"scale(1) rotate(-1deg)"},
+          {transform:"scale(1.04) rotate(1deg)"},
+          {transform:"scale(1) rotate(-1deg)"}
+        ],
+        {duration:520,easing:"ease-out"}
+      );
+    }
+
+    plant.addEventListener("click", waterPlant);
+
+    setDate();
+    applyTimeMessage();
+    applyGrowth();
+  </script>
+</body>
+</html>
