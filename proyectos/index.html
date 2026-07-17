@@ -3,19 +3,18 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Cómo usar Proyectos</title>
+  <title>Actualiza tus proyectos</title>
 
   <style>
     :root{
       --bg:#0b0a0f;
       --panel:#15131c;
-      --panel-2:#1a1624;
       --text:#f6f3fb;
       --muted:#aaa2b8;
       --purple:#a855f7;
+      --purple-2:#7c3aed;
       --purple-soft:#d8b4fe;
       --border:rgba(255,255,255,.09);
-      --success:#d7c1ff;
     }
 
     *{box-sizing:border-box}
@@ -28,29 +27,140 @@
       color:var(--text);
     }
 
-    body{padding:10px}
+    body{
+      padding:10px;
+      display:grid;
+      place-items:center;
+    }
 
     .widget{
-      width:min(100%,900px);
-      margin:auto;
-      padding:18px;
+      position:relative;
+      width:min(100%,720px);
+      min-height:390px;
+      padding:26px;
       border:1px solid var(--border);
-      border-radius:24px;
-      background:
-        radial-gradient(circle at 88% 8%, rgba(168,85,247,.20), transparent 30%),
-        radial-gradient(circle at 10% 92%, rgba(124,58,237,.13), transparent 28%),
-        linear-gradient(145deg,var(--panel),var(--bg));
-      box-shadow:0 18px 50px rgba(0,0,0,.30);
+      border-radius:28px;
       overflow:hidden;
+      background:
+        radial-gradient(circle at 86% 12%, rgba(168,85,247,.22), transparent 30%),
+        radial-gradient(circle at 12% 90%, rgba(124,58,237,.13), transparent 30%),
+        linear-gradient(145deg,var(--panel),var(--bg));
+      box-shadow:0 18px 50px rgba(0,0,0,.32);
+      display:grid;
+      place-items:center;
+      text-align:center;
+    }
+
+    .glow{
+      position:absolute;
+      width:220px;
+      height:220px;
+      border-radius:50%;
+      background:rgba(168,85,247,.12);
+      filter:blur(35px);
+      pointer-events:none;
+      animation:breathe 4s ease-in-out infinite;
+    }
+
+    .content{
+      position:relative;
+      z-index:2;
+      width:min(100%,520px);
     }
 
     .eyebrow{
-      font-size:12px;
-      font-weight:800;
-      letter-spacing:.09em;
-      text-transform:uppercase;
       color:var(--purple-soft);
-      margin-bottom:8px;
+      font-size:12px;
+      font-weight:850;
+      text-transform:uppercase;
+      letter-spacing:.12em;
+      margin-bottom:14px;
+    }
+
+    .clapper-wrap{
+      width:138px;
+      height:122px;
+      margin:0 auto 18px;
+      position:relative;
+      cursor:pointer;
+      user-select:none;
+      touch-action:manipulation;
+      filter:drop-shadow(0 18px 26px rgba(0,0,0,.28));
+    }
+
+    .clapper{
+      position:absolute;
+      inset:0;
+      transform-origin:32px 60px;
+    }
+
+    .clapper.clack{
+      animation:clack .55s cubic-bezier(.2,.8,.2,1);
+    }
+
+    .top{
+      position:absolute;
+      left:16px;
+      top:6px;
+      width:108px;
+      height:28px;
+      border-radius:8px 8px 4px 4px;
+      background:linear-gradient(135deg,#eee8f8,#bda9d7);
+      border:1px solid rgba(255,255,255,.28);
+      transform:rotate(-8deg);
+      transform-origin:16px 24px;
+      overflow:hidden;
+    }
+
+    .top::before{
+      content:"";
+      position:absolute;
+      inset:0;
+      background:
+        repeating-linear-gradient(
+          135deg,
+          rgba(20,17,27,.92) 0 15px,
+          transparent 15px 29px
+        );
+    }
+
+    .body{
+      position:absolute;
+      left:19px;
+      top:45px;
+      width:102px;
+      height:67px;
+      border-radius:8px 8px 14px 14px;
+      background:
+        linear-gradient(145deg,rgba(168,85,247,.35),rgba(124,58,237,.15)),
+        #1c1825;
+      border:1px solid rgba(216,180,254,.22);
+      box-shadow:inset 0 0 0 1px rgba(255,255,255,.025);
+    }
+
+    .body::before,
+    .body::after{
+      content:"";
+      position:absolute;
+      left:12px;
+      right:12px;
+      height:2px;
+      background:rgba(216,180,254,.18);
+    }
+
+    .body::before{top:22px}
+    .body::after{top:42px}
+
+    .dot{
+      position:absolute;
+      width:10px;
+      height:10px;
+      border-radius:50%;
+      background:var(--purple-soft);
+      box-shadow:0 0 18px rgba(216,180,254,.8);
+      right:28px;
+      bottom:19px;
+      opacity:.78;
     }
 
     h1{
@@ -60,591 +170,300 @@
       letter-spacing:-.04em;
     }
 
-    .intro{
-      margin-top:10px;
+    .message{
+      min-height:50px;
+      margin:14px auto 0;
+      max-width:480px;
       color:var(--muted);
-      font-size:15px;
+      font-size:16px;
       line-height:1.5;
+      transition:opacity .2s ease, transform .2s ease;
     }
 
-    .progress-top{
-      display:flex;
-      justify-content:space-between;
-      align-items:center;
-      gap:14px;
-      margin-top:18px;
-      flex-wrap:wrap;
+    .message.switching{
+      opacity:0;
+      transform:translateY(5px);
     }
 
-    .progress-label{
-      font-size:13px;
-      color:var(--muted);
-    }
-
-    .progress-label strong{
-      color:var(--purple-soft);
-    }
-
-    .progress-bar{
-      flex:1 1 240px;
-      height:9px;
-      border-radius:999px;
-      background:rgba(255,255,255,.07);
-      overflow:hidden;
-    }
-
-    .progress-fill{
-      height:100%;
-      width:0;
-      border-radius:inherit;
-      background:linear-gradient(90deg,#7c3aed,#a855f7,#d8b4fe);
-      transition:width .35s ease;
-    }
-
-    .steps{
-      display:grid;
-      grid-template-columns:repeat(4,1fr);
-      gap:10px;
-      margin-top:18px;
-    }
-
-    .step{
-      position:relative;
-      min-height:220px;
-      padding:16px;
-      border:1px solid var(--border);
-      border-radius:18px;
-      background:rgba(255,255,255,.035);
-      overflow:hidden;
-      cursor:grab;
-      transition:
-        transform .2s ease,
-        opacity .2s ease,
-        border-color .2s ease,
-        background .2s ease;
-      user-select:none;
-      display:flex;
-      flex-direction:column;
-    }
-
-    .step:active{cursor:grabbing}
-
-    .step.dragging{
-      opacity:.45;
-      transform:scale(.98);
-    }
-
-    .step.completed{
-      background:rgba(168,85,247,.08);
-      border-color:rgba(216,180,254,.25);
-    }
-
-    .step.completed h2,
-    .step.completed p,
-    .step.completed .example{
-      opacity:.58;
-    }
-
-    .step.completed h2{
-      text-decoration:line-through;
-      text-decoration-thickness:1px;
-    }
-
-    .step::after{
-      content:"";
-      position:absolute;
-      width:82px;
-      height:82px;
-      border-radius:50%;
-      right:-28px;
-      top:-28px;
-      background:rgba(168,85,247,.10);
-      pointer-events:none;
-    }
-
-    .step-head{
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:10px;
-      margin-bottom:14px;
-      position:relative;
-      z-index:1;
-    }
-
-    .number{
-      width:34px;
-      height:34px;
-      border-radius:50%;
-      display:grid;
-      place-items:center;
-      font-weight:850;
-      background:rgba(168,85,247,.16);
-      color:var(--purple-soft);
-      border:1px solid rgba(216,180,254,.16);
-      flex:0 0 auto;
-    }
-
-    .drag-handle{
-      color:var(--muted);
-      font-size:18px;
-      line-height:1;
-      letter-spacing:-2px;
-      opacity:.8;
-    }
-
-    .step h2{
-      margin:0;
-      font-size:17px;
-      line-height:1.25;
-      letter-spacing:-.02em;
-      transition:opacity .2s ease;
-    }
-
-    .step p{
-      margin:9px 0 0;
-      color:var(--muted);
-      font-size:13px;
-      line-height:1.45;
-      transition:opacity .2s ease;
-    }
-
-    .example{
-      margin-top:10px;
-      padding:10px;
-      border-radius:12px;
-      background:rgba(255,255,255,.035);
-      font-size:12px;
-      line-height:1.5;
-      transition:opacity .2s ease;
-    }
-
-    .bad{color:#c6becf}
-    .good{color:var(--success)}
-
-    .check-wrap{
-      margin-top:auto;
-      padding-top:16px;
-      display:flex;
-      align-items:center;
-      gap:9px;
-      position:relative;
-      z-index:2;
-    }
-
-    .check-button{
-      width:100%;
-      border:1px solid rgba(216,180,254,.18);
-      border-radius:13px;
-      padding:10px 12px;
-      background:rgba(255,255,255,.035);
-      color:var(--text);
-      font-size:13px;
-      font-weight:800;
-      cursor:pointer;
-      transition:
-        transform .18s ease,
-        background .18s ease,
-        border-color .18s ease;
-    }
-
-    .check-button:hover{
-      transform:translateY(-1px);
-      background:rgba(168,85,247,.10);
-    }
-
-    .check-button.done{
-      background:rgba(168,85,247,.16);
-      border-color:rgba(216,180,254,.28);
-      color:var(--purple-soft);
-    }
-
-    .golden-rule{
-      margin-top:12px;
-      padding:16px;
-      border:1px solid rgba(216,180,254,.16);
-      border-radius:18px;
-      background:
-        linear-gradient(145deg,rgba(168,85,247,.12),rgba(255,255,255,.03));
-    }
-
-    .golden-rule strong{
-      display:block;
-      color:var(--purple-soft);
-      font-size:13px;
-      letter-spacing:.04em;
-      text-transform:uppercase;
-      margin-bottom:7px;
-    }
-
-    .golden-rule span{
-      font-size:15px;
-      line-height:1.5;
-    }
-
-    .actions{
-      display:flex;
-      align-items:center;
-      gap:12px;
-      margin-top:14px;
-      flex-wrap:wrap;
-    }
-
-    .main-button,
-    .reset-button{
+    .button{
+      margin-top:20px;
       appearance:none;
       border:none;
-      cursor:pointer;
-      padding:12px 16px;
-      border-radius:14px;
-      font-weight:800;
+      border-radius:15px;
+      padding:13px 18px;
       font-size:14px;
-      transition:transform .2s ease, opacity .2s ease;
-    }
-
-    .main-button{
-      background:linear-gradient(135deg,#7c3aed,#a855f7);
+      font-weight:850;
       color:white;
-      box-shadow:0 10px 24px rgba(124,58,237,.22);
+      cursor:pointer;
+      background:linear-gradient(135deg,var(--purple-2),var(--purple));
+      box-shadow:0 12px 28px rgba(124,58,237,.24);
+      transition:transform .18s ease, box-shadow .18s ease;
     }
 
-    .reset-button{
-      background:rgba(255,255,255,.045);
-      color:var(--muted);
-      border:1px solid var(--border);
+    .button:hover{
+      transform:translateY(-2px);
+      box-shadow:0 16px 34px rgba(124,58,237,.3);
     }
 
-    .main-button:hover,
-    .reset-button:hover{
-      transform:translateY(-1px);
+    .button:active{transform:translateY(0) scale(.98)}
+
+    .hint{
+      margin-top:12px;
+      font-size:12px;
+      color:rgba(216,180,254,.62);
     }
 
-    .success-message{
-      min-height:20px;
+    .particle{
+      position:absolute;
+      z-index:4;
+      width:6px;
+      height:6px;
+      border-radius:50%;
+      background:var(--purple-soft);
+      pointer-events:none;
+      animation:spark .8s ease-out forwards;
+      box-shadow:0 0 12px rgba(216,180,254,.8);
+    }
+
+    .toast{
+      position:absolute;
+      left:50%;
+      bottom:18px;
+      transform:translate(-50%,12px);
+      padding:9px 13px;
+      border-radius:999px;
+      background:rgba(22,18,31,.88);
+      border:1px solid rgba(216,180,254,.17);
       color:var(--purple-soft);
-      font-size:14px;
-      font-weight:700;
+      font-size:12px;
+      font-weight:750;
       opacity:0;
-      transform:translateY(4px);
+      pointer-events:none;
       transition:opacity .25s ease, transform .25s ease;
+      backdrop-filter:blur(12px);
     }
 
-    .success-message.visible{
+    .toast.visible{
       opacity:1;
-      transform:translateY(0);
+      transform:translate(-50%,0);
     }
 
-    @media(max-width:760px){
-      .steps{grid-template-columns:1fr 1fr}
+    @keyframes clack{
+      0%{transform:rotate(0)}
+      35%{transform:rotate(-17deg)}
+      62%{transform:rotate(2deg)}
+      100%{transform:rotate(0)}
     }
 
-    @media(max-width:480px){
+    @keyframes breathe{
+      0%,100%{transform:scale(.92);opacity:.65}
+      50%{transform:scale(1.08);opacity:1}
+    }
+
+    @keyframes spark{
+      from{
+        opacity:1;
+        transform:translate(0,0) scale(1);
+      }
+      to{
+        opacity:0;
+        transform:translate(var(--x),var(--y)) scale(.2);
+      }
+    }
+
+    @media(max-width:520px){
       body{padding:6px}
 
       .widget{
-        padding:14px;
-        border-radius:18px;
+        min-height:360px;
+        padding:22px 16px;
+        border-radius:22px;
       }
 
-      .steps{grid-template-columns:1fr}
-
-      .step{min-height:auto}
-
-      .actions{
-        align-items:flex-start;
-        flex-direction:column;
+      .clapper-wrap{
+        transform:scale(.92);
+        margin-bottom:10px;
       }
 
-      .main-button,
-      .reset-button{
+      .message{
+        font-size:15px;
+      }
+
+      .button{
         width:100%;
+      }
+    }
+
+    @media(prefers-reduced-motion:reduce){
+      *,*::before,*::after{
+        animation-duration:.001ms !important;
+        animation-iteration-count:1 !important;
+        scroll-behavior:auto !important;
       }
     }
   </style>
 </head>
 
 <body>
-  <main class="widget">
-    <div class="eyebrow">🎬 Proyectos</div>
-    <h1>Organiza tu trabajo en 4 pasos</h1>
+  <main class="widget" id="widget">
+    <div class="glow"></div>
 
-    <div class="intro">
-      Puedes mover las tarjetas y marcar cada paso cuando lo completes.
+    <div class="content">
+      <div class="eyebrow">🎬 Proyectos</div>
+
+      <div class="clapper-wrap" id="clapperButton" role="button" tabindex="0" aria-label="Activar recordatorio">
+        <div class="clapper" id="clapper">
+          <div class="top"></div>
+          <div class="body">
+            <div class="dot"></div>
+          </div>
+        </div>
+      </div>
+
+      <h1>¿En qué va tu proyecto?</h1>
+
+      <div class="message" id="message">
+        Antes de irte, actualiza el estado y deja escrito el siguiente paso.
+      </div>
+
+      <button class="button" id="doneButton" type="button">
+        Ya actualicé ✨
+      </button>
+
+      <div class="hint">Toca la claqueta para otro recordatorio.</div>
     </div>
 
-    <div class="progress-top">
-      <div class="progress-label">
-        <strong id="completedCount">0</strong> de 4 pasos completados
-      </div>
-      <div class="progress-bar">
-        <div class="progress-fill" id="progressFill"></div>
-      </div>
-    </div>
-
-    <section class="steps" id="stepsContainer">
-      <article class="step" draggable="true" data-id="crear">
-        <div class="step-head">
-          <div class="number">1</div>
-          <div class="drag-handle" title="Arrastrar">⋮⋮</div>
-        </div>
-
-        <h2>➕ Crea el proyecto</h2>
-        <p>Escribe el nombre, el cliente y la fecha de entrega.</p>
-
-        <div class="check-wrap">
-          <button class="check-button" type="button">○ Marcar como listo</button>
-        </div>
-      </article>
-
-      <article class="step" draggable="true" data-id="accion">
-        <div class="step-head">
-          <div class="number">2</div>
-          <div class="drag-handle" title="Arrastrar">⋮⋮</div>
-        </div>
-
-        <h2>🎯 Escribe qué harás ahora</h2>
-        <p>La próxima acción debe ser concreta.</p>
-
-        <div class="example">
-          <div class="bad">❌ Editar video</div>
-          <div class="good">✅ Seleccionar clips</div>
-          <div class="good">✅ Corregir color</div>
-          <div class="good">✅ Exportar versión final</div>
-        </div>
-
-        <div class="check-wrap">
-          <button class="check-button" type="button">○ Marcar como listo</button>
-        </div>
-      </article>
-
-      <article class="step" draggable="true" data-id="trabajar">
-        <div class="step-head">
-          <div class="number">3</div>
-          <div class="drag-handle" title="Arrastrar">⋮⋮</div>
-        </div>
-
-        <h2>💼 Trabaja en esa acción</h2>
-        <p>Concéntrate solo en eso. Cuando termines, escribe la siguiente acción.</p>
-
-        <div class="check-wrap">
-          <button class="check-button" type="button">○ Marcar como listo</button>
-        </div>
-      </article>
-
-      <article class="step" draggable="true" data-id="estado">
-        <div class="step-head">
-          <div class="number">4</div>
-          <div class="drag-handle" title="Arrastrar">⋮⋮</div>
-        </div>
-
-        <h2>🔄 Cambia el estado</h2>
-        <p>Por iniciar → Editando → Revisión → Finalizado.</p>
-
-        <div class="check-wrap">
-          <button class="check-button" type="button">○ Marcar como listo</button>
-        </div>
-      </article>
-    </section>
-
-    <section class="golden-rule">
-      <strong>💜 Regla de oro</strong>
-      <span>Antes de cerrar Notion, actualiza el estado y deja escrita la siguiente acción.</span>
-    </section>
-
-    <div class="actions">
-      <button class="main-button" id="understoodButton">▶ Ya entendí</button>
-      <button class="reset-button" id="resetButton">↺ Reiniciar pasos</button>
-
-      <div class="success-message" id="successMessage">
-        ✔ Perfecto. Ya puedes empezar con tu proyecto.
-      </div>
-    </div>
+    <div class="toast" id="toast">Buen trabajo. El Yhorbis del futuro te lo agradece.</div>
   </main>
 
   <script>
-    const STORAGE_CHECKS = "proyectos_widget_checks_v1";
-    const STORAGE_ORDER = "proyectos_widget_order_v1";
+    const messages = [
+      "Antes de irte, actualiza el estado y deja escrito el siguiente paso.",
+      "¿Ya cambió de etapa? Que también cambie en Notion.",
+      "Tu siguiente paso debe ser algo concreto y fácil de empezar.",
+      "¿Se te ocurrió una idea? Guárdala dentro del proyecto antes de olvidarla.",
+      "Actualizar el estado toma cinco segundos y evita mucha confusión después.",
+      "No necesitas organizarlo todo. Solo deja claro qué sigue.",
+      "El proyecto no está perdido: quizá solo le falta actualizar el estado.",
+      "Una idea escrita vale más que una idea perfecta que se olvidó."
+    ];
 
-    const container = document.getElementById("stepsContainer");
-    const progressFill = document.getElementById("progressFill");
-    const completedCount = document.getElementById("completedCount");
-    const successMessage = document.getElementById("successMessage");
-    const understoodButton = document.getElementById("understoodButton");
-    const resetButton = document.getElementById("resetButton");
+    const lateMessages = [
+      "Ya es tarde. Actualiza el estado y deja que mañana empiece más fácil.",
+      "Cierre rápido: estado, siguiente paso y a descansar.",
+      "No hace falta terminarlo hoy. Solo deja claro por dónde continuar mañana."
+    ];
 
-    let draggedCard = null;
+    const widget = document.getElementById("widget");
+    const clapperButton = document.getElementById("clapperButton");
+    const clapper = document.getElementById("clapper");
+    const message = document.getElementById("message");
+    const doneButton = document.getElementById("doneButton");
+    const toast = document.getElementById("toast");
 
-    function readChecks(){
-      try{
-        return JSON.parse(localStorage.getItem(STORAGE_CHECKS) || "{}");
-      }catch{
-        return {};
-      }
+    let clickCount = Number(localStorage.getItem("clapper_click_count") || 0);
+    let lastIndex = -1;
+
+    function chooseMessage(){
+      const hour = new Date().getHours();
+      const pool = hour >= 22 || hour < 5
+        ? [...messages, ...lateMessages, ...lateMessages]
+        : messages;
+
+      let index;
+      do{
+        index = Math.floor(Math.random() * pool.length);
+      }while(index === lastIndex && pool.length > 1);
+
+      lastIndex = index;
+      return pool[index];
     }
 
-    function saveChecks(checks){
-      localStorage.setItem(STORAGE_CHECKS, JSON.stringify(checks));
-    }
+    function animateClapper(){
+      clapper.classList.remove("clack");
+      void clapper.offsetWidth;
+      clapper.classList.add("clack");
+      createParticles();
 
-    function readOrder(){
-      try{
-        return JSON.parse(localStorage.getItem(STORAGE_ORDER) || "[]");
-      }catch{
-        return [];
-      }
-    }
+      clickCount += 1;
+      localStorage.setItem("clapper_click_count", clickCount);
 
-    function saveOrder(){
-      const order = [...container.querySelectorAll(".step")]
-        .map(card => card.dataset.id);
-
-      localStorage.setItem(STORAGE_ORDER, JSON.stringify(order));
-    }
-
-    function applySavedOrder(){
-      const order = readOrder();
-
-      if(!order.length) return;
-
-      order.forEach(id => {
-        const card = container.querySelector(`[data-id="${id}"]`);
-        if(card) container.appendChild(card);
-      });
-    }
-
-    function updateCard(card, completed){
-      const button = card.querySelector(".check-button");
-
-      card.classList.toggle("completed", completed);
-      button.classList.toggle("done", completed);
-      button.textContent = completed
-        ? "✓ Paso completado"
-        : "○ Marcar como listo";
-    }
-
-    function updateProgress(){
-      const cards = [...container.querySelectorAll(".step")];
-      const completed = cards.filter(card =>
-        card.classList.contains("completed")
-      ).length;
-
-      const percent = Math.round((completed / cards.length) * 100);
-
-      completedCount.textContent = completed;
-      progressFill.style.width = percent + "%";
-
-      if(completed === cards.length){
-        successMessage.textContent =
-          "✔ Todo listo. Ya puedes empezar a trabajar.";
-        successMessage.classList.add("visible");
-        understoodButton.textContent = "✔ Completado";
-      }else{
-        successMessage.classList.remove("visible");
-        understoodButton.textContent = "▶ Ya entendí";
-      }
-    }
-
-    function restoreChecks(){
-      const checks = readChecks();
-
-      container.querySelectorAll(".step").forEach(card => {
-        updateCard(card, Boolean(checks[card.dataset.id]));
-      });
-
-      updateProgress();
-    }
-
-    container.addEventListener("click", event => {
-      const button = event.target.closest(".check-button");
-      if(!button) return;
-
-      const card = button.closest(".step");
-      const checks = readChecks();
-      const nextValue = !card.classList.contains("completed");
-
-      checks[card.dataset.id] = nextValue;
-      saveChecks(checks);
-      updateCard(card, nextValue);
-      updateProgress();
-    });
-
-    container.addEventListener("dragstart", event => {
-      const card = event.target.closest(".step");
-      if(!card) return;
-
-      draggedCard = card;
-      card.classList.add("dragging");
-
-      event.dataTransfer.effectAllowed = "move";
-      event.dataTransfer.setData("text/plain", card.dataset.id);
-    });
-
-    container.addEventListener("dragend", () => {
-      if(draggedCard){
-        draggedCard.classList.remove("dragging");
-      }
-
-      draggedCard = null;
-      saveOrder();
-    });
-
-    container.addEventListener("dragover", event => {
-      event.preventDefault();
-
-      if(!draggedCard) return;
-
-      const afterElement = getDragAfterElement(container, event.clientX, event.clientY);
-
-      if(afterElement == null){
-        container.appendChild(draggedCard);
-      }else{
-        container.insertBefore(draggedCard, afterElement);
-      }
-    });
-
-    function getDragAfterElement(container, x, y){
-      const cards = [...container.querySelectorAll(".step:not(.dragging)")];
-
-      return cards.reduce((closest, card) => {
-        const box = card.getBoundingClientRect();
-        const centerX = box.left + box.width / 2;
-        const centerY = box.top + box.height / 2;
-        const distance = Math.hypot(x - centerX, y - centerY);
-
-        if(distance < closest.distance){
-          return {distance, element:card};
-        }
-
-        return closest;
-      }, {distance:Number.POSITIVE_INFINITY, element:null}).element;
-    }
-
-    understoodButton.addEventListener("click", () => {
-      successMessage.textContent =
-        "✔ Perfecto. Ahora baja y empieza con un proyecto.";
-      successMessage.classList.add("visible");
+      message.classList.add("switching");
 
       setTimeout(() => {
-        window.scrollTo({
-          top:document.body.scrollHeight,
-          behavior:"smooth"
-        });
-      }, 250);
+        if(clickCount % 7 === 0){
+          message.textContent = "Está bonito hacer clic… pero acuérdate de actualizar Notion 😌";
+        }else{
+          message.textContent = chooseMessage();
+        }
+
+        message.classList.remove("switching");
+      }, 170);
+    }
+
+    function createParticles(){
+      const box = clapperButton.getBoundingClientRect();
+      const widgetBox = widget.getBoundingClientRect();
+      const centerX = box.left - widgetBox.left + box.width / 2;
+      const centerY = box.top - widgetBox.top + box.height / 2;
+
+      for(let i = 0; i < 16; i++){
+        const particle = document.createElement("span");
+        particle.className = "particle";
+
+        const angle = Math.random() * Math.PI * 2;
+        const distance = 45 + Math.random() * 65;
+
+        particle.style.left = centerX + "px";
+        particle.style.top = centerY + "px";
+        particle.style.setProperty("--x", Math.cos(angle) * distance + "px");
+        particle.style.setProperty("--y", Math.sin(angle) * distance + "px");
+
+        widget.appendChild(particle);
+        setTimeout(() => particle.remove(), 900);
+      }
+    }
+
+    function showToast(){
+      animateClapper();
+      toast.classList.add("visible");
+      doneButton.textContent = "Listo por hoy ✓";
+
+      localStorage.setItem("last_project_update", new Date().toISOString());
+
+      setTimeout(() => {
+        toast.classList.remove("visible");
+      }, 2600);
+
+      setTimeout(() => {
+        doneButton.textContent = "Ya actualicé ✨";
+      }, 3200);
+    }
+
+    function checkLastUpdate(){
+      const saved = localStorage.getItem("last_project_update");
+      if(!saved) return;
+
+      const diff = Date.now() - new Date(saved).getTime();
+      const days = diff / 86400000;
+
+      if(days >= 3){
+        message.textContent = "🤨 Sospecho que hay proyectos esperando una actualización.";
+      }
+    }
+
+    clapperButton.addEventListener("click", animateClapper);
+
+    clapperButton.addEventListener("keydown", event => {
+      if(event.key === "Enter" || event.key === " "){
+        event.preventDefault();
+        animateClapper();
+      }
     });
 
-    resetButton.addEventListener("click", () => {
-      localStorage.removeItem(STORAGE_CHECKS);
+    doneButton.addEventListener("click", showToast);
 
-      container.querySelectorAll(".step").forEach(card => {
-        updateCard(card, false);
-      });
-
-      successMessage.classList.remove("visible");
-      updateProgress();
-    });
-
-    applySavedOrder();
-    restoreChecks();
+    checkLastUpdate();
   </script>
 </body>
 </html>
