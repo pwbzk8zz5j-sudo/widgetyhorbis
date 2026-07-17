@@ -3,16 +3,15 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Cajita de ideas — Fidget</title>
+<title>Cajita de ideas — Lámpara de lava dinámica</title>
 <style>
 :root{
   --bg:#0b0a0f;
   --panel:#15131c;
-  --panel-2:#100e16;
   --text:#f6f3fb;
   --muted:#91899d;
   --purple:#a855f7;
-  --purple-2:#7c3aed;
+  --purple2:#7c3aed;
   --soft:#d8b4fe;
   --border:rgba(255,255,255,.08);
 }
@@ -38,6 +37,7 @@ body{
     radial-gradient(circle at 92% 8%,rgba(168,85,247,.18),transparent 26%),
     linear-gradient(145deg,var(--panel),var(--bg));
   box-shadow:0 16px 40px rgba(0,0,0,.28);
+  overflow:hidden;
 }
 .header{
   display:flex;
@@ -63,106 +63,99 @@ body{
 }
 .content{
   display:grid;
-  grid-template-columns:150px 1fr;
-  gap:24px;
+  grid-template-columns:260px 1fr;
+  gap:26px;
   align-items:center;
 }
-.toy-box{
+.lamp{
   position:relative;
-  width:150px;
-  height:104px;
+  width:260px;
+  height:146px;
   overflow:hidden;
-  border:1px solid rgba(216,180,254,.16);
-  border-radius:18px;
+  border:1px solid rgba(216,180,254,.14);
+  border-radius:20px;
   background:
-    radial-gradient(circle at 50% 45%,rgba(168,85,247,.12),transparent 44%),
-    linear-gradient(145deg,rgba(255,255,255,.035),rgba(255,255,255,.015));
-  box-shadow:inset 0 0 28px rgba(0,0,0,.18);
-  user-select:none;
-  touch-action:none;
+    radial-gradient(circle at 50% 55%,rgba(168,85,247,.10),transparent 60%),
+    linear-gradient(180deg,rgba(255,255,255,.035),rgba(255,255,255,.012));
+  box-shadow:
+    inset 0 0 36px rgba(0,0,0,.24),
+    0 0 28px rgba(168,85,247,.08);
+  cursor:pointer;
+  isolation:isolate;
 }
-.toy-box::after{
-  content:"arrastra y suelta";
+.lamp::before,
+.lamp::after{
+  content:"";
   position:absolute;
   left:50%;
-  bottom:7px;
   transform:translateX(-50%);
-  color:rgba(255,255,255,.26);
-  font-size:9px;
-  font-weight:700;
-  letter-spacing:.08em;
-  text-transform:uppercase;
+  width:78%;
+  height:9px;
+  border-radius:999px;
+  background:linear-gradient(90deg,rgba(255,255,255,.04),rgba(216,180,254,.18),rgba(255,255,255,.04));
+  z-index:5;
   pointer-events:none;
-  white-space:nowrap;
 }
-.bulb{
+.lamp::before{top:8px}
+.lamp::after{bottom:8px}
+
+#lava{
   position:absolute;
-  left:43px;
-  top:12px;
-  width:64px;
-  height:64px;
-  cursor:grab;
-  z-index:3;
-  filter:drop-shadow(0 8px 12px rgba(0,0,0,.28));
-  will-change:left,top,transform,filter;
+  inset:0;
+  width:100%;
+  height:100%;
+  display:block;
 }
-.bulb:active{cursor:grabbing}
-.bulb.glow{
-  filter:
-    drop-shadow(0 0 12px rgba(168,85,247,.95))
-    drop-shadow(0 0 22px rgba(168,85,247,.55));
+
+.glass{
+  position:absolute;
+  inset:0;
+  z-index:4;
+  pointer-events:none;
+  background:
+    linear-gradient(90deg,rgba(255,255,255,.05),transparent 13%,transparent 87%,rgba(255,255,255,.03)),
+    radial-gradient(circle at 30% 20%,rgba(255,255,255,.05),transparent 24%);
+  mix-blend-mode:screen;
 }
-.copy{
-  min-width:0;
+
+.ripple{
+  position:absolute;
+  width:18px;
+  height:18px;
+  border:1px solid rgba(216,180,254,.7);
+  border-radius:50%;
+  transform:translate(-50%,-50%) scale(.4);
+  pointer-events:none;
+  animation:ripple .8s ease-out forwards;
+  z-index:6;
 }
+
+.copy{min-width:0}
 .idea{
-  font-size:17px;
-  font-weight:700;
+  font-size:18px;
+  font-weight:750;
   line-height:1.5;
-  letter-spacing:-.02em;
-  transition:opacity .18s ease,transform .18s ease;
+  letter-spacing:-.025em;
+  transition:opacity .2s ease,transform .2s ease;
 }
 .idea strong{color:var(--soft)}
-.idea.fade{
-  opacity:.2;
-  transform:translateY(3px);
-}
+.idea.fade{opacity:.15;transform:translateY(4px)}
 .hint{
   margin-top:10px;
   color:var(--muted);
   font-size:11px;
 }
-.spark{
-  position:absolute;
-  width:6px;
-  height:6px;
-  border-radius:50%;
-  background:var(--soft);
-  box-shadow:0 0 10px rgba(216,180,254,.9);
-  pointer-events:none;
-  z-index:2;
-  animation:spark .55s ease-out forwards;
+
+@keyframes ripple{
+  0%{opacity:.95;transform:translate(-50%,-50%) scale(.4)}
+  100%{opacity:0;transform:translate(-50%,-50%) scale(7)}
 }
-@keyframes spark{
-  from{opacity:1;transform:translate(0,0) scale(1)}
-  to{opacity:0;transform:translate(var(--x),var(--y)) scale(.2)}
-}
-@media(max-width:620px){
-  .content{
-    grid-template-columns:1fr;
-  }
-  .toy-box{
-    width:100%;
-    height:112px;
-  }
-  .bulb{
-    left:calc(50% - 32px);
-  }
+
+@media(max-width:650px){
+  .content{grid-template-columns:1fr}
+  .lamp{width:100%}
   .badge{display:none}
-  .idea{font-size:15px}
-}
-@media(prefers-reduced-motion:reduce){
-  *{scroll-behavior:auto!important}
+  .idea{font-size:16px}
 }
 </style>
 </head>
@@ -170,35 +163,21 @@ body{
 <main class="widget">
   <div class="header">
     <h1>Cajita de ideas</h1>
-    <div class="badge">💜 Fidget creativo</div>
+    <div class="badge">Inspiración en movimiento</div>
   </div>
 
   <div class="content">
-    <div class="toy-box" id="toyBox" aria-label="Zona interactiva para mover la bombilla">
-      <svg id="bulb" class="bulb" viewBox="0 0 68 68" role="button" tabindex="0" aria-label="Bombilla interactiva">
-        <defs>
-          <radialGradient id="glassGlow" cx="38%" cy="28%">
-            <stop offset="0%" stop-color="#fff8ff"/>
-            <stop offset="46%" stop-color="#d8b4fe"/>
-            <stop offset="100%" stop-color="#8b5cf6"/>
-          </radialGradient>
-        </defs>
-        <path d="M34 7c-10 0-18 8-18 18 0 7 3 11 8 16 2 2 3 5 3 8h14c0-3 1-6 3-8 5-5 8-9 8-16 0-10-8-18-18-18z"
-          fill="url(#glassGlow)" stroke="rgba(255,255,255,.65)" stroke-width="1.2"/>
-        <path d="M29 35c1.5 2 3 4 3 8M39 35c-1.5 2-3 4-3 8"
-          fill="none" stroke="#f7efff" stroke-width="1.7" stroke-linecap="round"/>
-        <rect x="27" y="48" width="14" height="11" rx="2" fill="#56505e"/>
-        <path d="M27 51h14M27 55h14" stroke="#2d2932" stroke-width="2"/>
-        <rect x="30" y="59" width="8" height="3.5" rx="1.5" fill="#302b35"/>
-      </svg>
+    <div class="lamp" id="lamp" role="button" tabindex="0" aria-label="Lámpara de lava interactiva">
+      <canvas id="lava"></canvas>
+      <div class="glass"></div>
     </div>
 
     <div class="copy">
-      <div id="idea" class="idea">
-        No hace falta que sea una <strong>buena idea</strong>. Solo no la olvides.
+      <div class="idea" id="idea">
+        Las ideas flotan. <strong>No las persigas.</strong> Déjalas aparecer.
       </div>
       <div class="hint">
-        Arrastra la bombilla, suéltala para lanzarla y haz clic para cambiar la frase.
+        Se mueve sola. Haz clic para agitar la lava y cambiar la inspiración.
       </div>
     </div>
   </div>
@@ -206,216 +185,273 @@ body{
 
 <script>
 const phrases=[
-  'No hace falta que sea una <strong>buena idea</strong>. Solo no la olvides.',
-  'Escríbela ahora. <strong>Ya decidirás después</strong> qué hacer con ella.',
+  'Las ideas flotan. <strong>No las persigas.</strong> Déjalas aparecer.',
+  'A veces la mejor idea llega cuando dejas de buscarla.',
   'Una idea rara también merece una oportunidad.',
-  'No la juzgues todavía. <strong>Solo guárdala.</strong>',
-  'Quizá hoy sea solo una nota. <strong>Mañana puede ser un proyecto.</strong>',
-  'Tu próxima buena idea puede empezar con una tontería.',
-  'Anota eso que no quieres olvidar.',
-  '¿Y si pruebas justo lo contrario?',
   'No necesitas la idea completa. Solo el primer pedacito.',
-  'A veces la inspiración llega cuando dejas de perseguirla.'
+  'Quizá hoy sea una nota. <strong>Mañana puede ser un proyecto.</strong>',
+  'Escríbela antes de que vuelva a esconderse.',
+  '¿Y si pruebas justo lo contrario?',
+  'Tu próxima buena idea puede empezar con una tontería.',
+  'Lo incompleto también puede tener dirección.',
+  'Dale cinco minutos antes de descartarla.'
 ];
 
-const box=document.getElementById("toyBox");
-const bulb=document.getElementById("bulb");
+const lamp=document.getElementById("lamp");
+const canvas=document.getElementById("lava");
+const ctx=canvas.getContext("2d");
 const idea=document.getElementById("idea");
 
-let x=43, y=12;
-let vx=0, vy=0;
-let dragging=false;
-let moved=false;
-let pointerId=null;
-let grabX=0, grabY=0;
-let lastX=0, lastY=0, lastT=0;
-let animationId=null;
-let lastPhrase=0;
+let dpr=Math.min(window.devicePixelRatio||1,2);
+let width=0;
+let height=0;
+let phraseIndex=0;
+let mouse={x:0,y:0,active:false};
+let lastTime=performance.now();
 
-function clamp(v,min,max){
-  return Math.min(Math.max(v,min),max);
+const blobCount=14;
+const blobs=[];
+
+function resize(){
+  const rect=lamp.getBoundingClientRect();
+  width=rect.width;
+  height=rect.height;
+  canvas.width=Math.round(width*dpr);
+  canvas.height=Math.round(height*dpr);
+  canvas.style.width=width+"px";
+  canvas.style.height=height+"px";
+  ctx.setTransform(dpr,0,0,dpr,0,0);
 }
 
-function bounds(){
+function random(min,max){
+  return Math.random()*(max-min)+min;
+}
+
+function makeBlob(i){
+  const radius=random(12,28);
   return {
-    maxX: box.clientWidth - bulb.offsetWidth,
-    maxY: box.clientHeight - bulb.offsetHeight
+    x:random(radius,width-radius),
+    y:random(radius,height-radius),
+    vx:random(-0.32,0.32),
+    vy:random(-0.28,0.28),
+    radius,
+    baseRadius:radius,
+    phase:random(0,Math.PI*2),
+    breathSpeed:random(.0012,.0024),
+    hueShift:random(-10,10),
+    seed:i*13.37
   };
 }
 
-function render(){
-  bulb.style.left=x+"px";
-  bulb.style.top=y+"px";
+function initBlobs(){
+  blobs.length=0;
+  for(let i=0;i<blobCount;i++) blobs.push(makeBlob(i));
 }
 
-function glow(){
-  bulb.classList.add("glow");
-  setTimeout(()=>bulb.classList.remove("glow"),220);
+function softBounds(b){
+  const pad=b.radius+8;
+  const force=.0018;
+
+  if(b.x<pad) b.vx+=(pad-b.x)*force;
+  if(b.x>width-pad) b.vx-=(b.x-(width-pad))*force;
+  if(b.y<pad) b.vy+=(pad-b.y)*force;
+  if(b.y>height-pad) b.vy-=(b.y-(height-pad))*force;
 }
 
-function sparks(){
-  const count=6;
-  for(let i=0;i<count;i++){
-    const s=document.createElement("span");
-    s.className="spark";
-    s.style.left=(x+bulb.offsetWidth/2)+"px";
-    s.style.top=(y+bulb.offsetHeight/2)+"px";
-    const a=Math.random()*Math.PI*2;
-    const d=18+Math.random()*20;
-    s.style.setProperty("--x",Math.cos(a)*d+"px");
-    s.style.setProperty("--y",Math.sin(a)*d+"px");
-    box.appendChild(s);
-    setTimeout(()=>s.remove(),600);
+function interactBlobs(){
+  for(let i=0;i<blobs.length;i++){
+    for(let j=i+1;j<blobs.length;j++){
+      const a=blobs[i];
+      const b=blobs[j];
+      const dx=b.x-a.x;
+      const dy=b.y-a.y;
+      const dist=Math.hypot(dx,dy)||1;
+      const minDist=(a.radius+b.radius)*.72;
+
+      if(dist<minDist){
+        const push=(minDist-dist)*.00075;
+        const nx=dx/dist;
+        const ny=dy/dist;
+        a.vx-=nx*push;
+        a.vy-=ny*push;
+        b.vx+=nx*push;
+        b.vy+=ny*push;
+      }else if(dist<110){
+        const pull=(110-dist)*.0000024;
+        const nx=dx/dist;
+        const ny=dy/dist;
+        a.vx+=nx*pull;
+        a.vy+=ny*pull;
+        b.vx-=nx*pull;
+        b.vy-=ny*pull;
+      }
+    }
+  }
+}
+
+function update(dt,time){
+  interactBlobs();
+
+  for(const b of blobs){
+    const flowX=Math.sin(time*.00035+b.seed)*.00055;
+    const flowY=Math.cos(time*.00028+b.seed*1.7)*.00045;
+
+    b.vx+=flowX*dt;
+    b.vy+=flowY*dt;
+
+    if(mouse.active){
+      const dx=b.x-mouse.x;
+      const dy=b.y-mouse.y;
+      const dist=Math.hypot(dx,dy)||1;
+      if(dist<90){
+        const strength=(90-dist)/90;
+        b.vx+=(dx/dist)*strength*.012*dt;
+        b.vy+=(dy/dist)*strength*.012*dt;
+      }
+    }
+
+    softBounds(b);
+
+    const speed=Math.hypot(b.vx,b.vy);
+    const maxSpeed=.58;
+    if(speed>maxSpeed){
+      b.vx=(b.vx/speed)*maxSpeed;
+      b.vy=(b.vy/speed)*maxSpeed;
+    }
+
+    b.vx*=Math.pow(.995,dt);
+    b.vy*=Math.pow(.995,dt);
+
+    b.x+=b.vx*dt;
+    b.y+=b.vy*dt;
+
+    const breathe=Math.sin(time*b.breathSpeed+b.phase);
+    b.radius=b.baseRadius*(1+breathe*.12);
   }
 }
 
-function bounceLoop(){
-  cancelAnimationFrame(animationId);
-  const friction=.985;
-  const bounce=.78;
+function drawBlob(b){
+  const stretchX=1+Math.min(Math.abs(b.vx)*.55,.22);
+  const stretchY=1+Math.min(Math.abs(b.vy)*.55,.22);
 
-  function step(){
-    if(dragging) return;
+  ctx.save();
+  ctx.translate(b.x,b.y);
+  ctx.rotate(Math.atan2(b.vy,b.vx)*.12);
+  ctx.scale(stretchX,stretchY);
 
-    const b=bounds();
-    x+=vx;
-    y+=vy;
+  const grad=ctx.createRadialGradient(
+    -b.radius*.28,-b.radius*.32,b.radius*.1,
+    0,0,b.radius*1.12
+  );
+  grad.addColorStop(0,"rgba(255,255,255,.92)");
+  grad.addColorStop(.18,"rgba(221,185,255,.98)");
+  grad.addColorStop(.52,"rgba(168,85,247,.96)");
+  grad.addColorStop(1,"rgba(108,43,205,.96)");
 
-    let hit=false;
+  ctx.fillStyle=grad;
+  ctx.shadowColor="rgba(168,85,247,.48)";
+  ctx.shadowBlur=18;
+  ctx.beginPath();
+  ctx.arc(0,0,b.radius,0,Math.PI*2);
+  ctx.fill();
 
-    if(x<=0){
-      x=0;
-      vx=Math.abs(vx)*bounce;
-      hit=true;
-    }else if(x>=b.maxX){
-      x=b.maxX;
-      vx=-Math.abs(vx)*bounce;
-      hit=true;
-    }
-
-    if(y<=0){
-      y=0;
-      vy=Math.abs(vy)*bounce;
-      hit=true;
-    }else if(y>=b.maxY){
-      y=b.maxY;
-      vy=-Math.abs(vy)*bounce;
-      hit=true;
-    }
-
-    vx*=friction;
-    vy*=friction;
-
-    if(hit){
-      glow();
-      if(Math.hypot(vx,vy)>3.2) sparks();
-    }
-
-    render();
-
-    if(Math.hypot(vx,vy)>.08){
-      animationId=requestAnimationFrame(step);
-    }
-  }
-
-  animationId=requestAnimationFrame(step);
+  ctx.restore();
 }
 
-function changePhrase(){
-  let i;
-  do{
-    i=Math.floor(Math.random()*phrases.length);
-  }while(i===lastPhrase);
+function draw(){
+  ctx.clearRect(0,0,width,height);
 
-  lastPhrase=i;
+  ctx.save();
+  ctx.globalCompositeOperation="screen";
+  for(const b of blobs) drawBlob(b);
+  ctx.restore();
+
+  ctx.save();
+  ctx.globalCompositeOperation="source-over";
+  ctx.filter="blur(7px)";
+  ctx.globalAlpha=.78;
+  for(const b of blobs) drawBlob(b);
+  ctx.restore();
+
+  ctx.save();
+  ctx.globalCompositeOperation="screen";
+  ctx.globalAlpha=.55;
+  for(const b of blobs) drawBlob(b);
+  ctx.restore();
+}
+
+function loop(time){
+  const dt=Math.min((time-lastTime)/16.6667,2.2);
+  lastTime=time;
+  update(dt,time);
+  draw();
+  requestAnimationFrame(loop);
+}
+
+function nextPhrase(){
+  phraseIndex=(phraseIndex+1)%phrases.length;
   idea.classList.add("fade");
   setTimeout(()=>{
-    idea.innerHTML=phrases[i];
+    idea.innerHTML=phrases[phraseIndex];
     idea.classList.remove("fade");
-  },120);
-  glow();
-  sparks();
+  },150);
 }
 
-bulb.addEventListener("pointerdown",e=>{
-  dragging=true;
-  moved=false;
-  pointerId=e.pointerId;
-  bulb.setPointerCapture(pointerId);
-  cancelAnimationFrame(animationId);
+function rippleAt(x,y){
+  const r=document.createElement("span");
+  r.className="ripple";
+  r.style.left=x+"px";
+  r.style.top=y+"px";
+  lamp.appendChild(r);
+  setTimeout(()=>r.remove(),820);
+}
 
-  const r=bulb.getBoundingClientRect();
-  grabX=e.clientX-r.left;
-  grabY=e.clientY-r.top;
-
-  lastX=e.clientX;
-  lastY=e.clientY;
-  lastT=performance.now();
-  vx=0;
-  vy=0;
-});
-
-bulb.addEventListener("pointermove",e=>{
-  if(!dragging || e.pointerId!==pointerId) return;
-
-  const r=box.getBoundingClientRect();
-  const b=bounds();
-  const now=performance.now();
-  const dt=Math.max(8,now-lastT);
-
-  const newX=clamp(e.clientX-r.left-grabX,0,b.maxX);
-  const newY=clamp(e.clientY-r.top-grabY,0,b.maxY);
-
-  vx=(e.clientX-lastX)/dt*16;
-  vy=(e.clientY-lastY)/dt*16;
-
-  if(Math.hypot(e.clientX-lastX,e.clientY-lastY)>1.5){
-    moved=true;
-  }
-
-  x=newX;
-  y=newY;
-  render();
-
-  lastX=e.clientX;
-  lastY=e.clientY;
-  lastT=now;
-});
-
-function release(e){
-  if(!dragging || e.pointerId!==pointerId) return;
-
-  dragging=false;
-  try{ bulb.releasePointerCapture(pointerId); }catch(_){}
-  pointerId=null;
-
-  if(!moved){
-    changePhrase();
-  }else{
-    vx=clamp(vx,-12,12);
-    vy=clamp(vy,-12,12);
-    bounceLoop();
+function pulseAt(x,y){
+  for(const b of blobs){
+    const dx=b.x-x;
+    const dy=b.y-y;
+    const dist=Math.hypot(dx,dy)||1;
+    const force=Math.max(0,1-dist/180);
+    b.vx+=(dx/dist)*force*1.15;
+    b.vy+=(dy/dist)*force*1.15;
   }
 }
 
-bulb.addEventListener("pointerup",release);
-bulb.addEventListener("pointercancel",release);
+function activate(clientX=null,clientY=null){
+  const rect=lamp.getBoundingClientRect();
+  const x=clientX===null ? rect.width/2 : clientX-rect.left;
+  const y=clientY===null ? rect.height/2 : clientY-rect.top;
+  rippleAt(x,y);
+  pulseAt(x,y);
+  nextPhrase();
+}
 
-bulb.addEventListener("keydown",e=>{
-  if(e.key==="Enter" || e.key===" "){
+lamp.addEventListener("mousemove",e=>{
+  const rect=lamp.getBoundingClientRect();
+  mouse.x=e.clientX-rect.left;
+  mouse.y=e.clientY-rect.top;
+  mouse.active=true;
+});
+lamp.addEventListener("mouseleave",()=>mouse.active=false);
+lamp.addEventListener("click",e=>activate(e.clientX,e.clientY));
+lamp.addEventListener("keydown",e=>{
+  if(e.key==="Enter"||e.key===" "){
     e.preventDefault();
-    changePhrase();
+    activate();
   }
 });
 
 window.addEventListener("resize",()=>{
-  const b=bounds();
-  x=clamp(x,0,b.maxX);
-  y=clamp(y,0,b.maxY);
-  render();
+  resize();
+  for(const b of blobs){
+    b.x=Math.min(Math.max(b.radius,b.x),width-b.radius);
+    b.y=Math.min(Math.max(b.radius,b.y),height-b.radius);
+  }
 });
 
-render();
+resize();
+initBlobs();
+requestAnimationFrame(loop);
 </script>
 </body>
 </html>
