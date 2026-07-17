@@ -1,283 +1,286 @@
+
 <!doctype html>
 <html lang="es">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Productividad</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Un recordatorio</title>
   <style>
     :root{
-      --card:rgba(255,255,255,.065);
-      --card-hover:rgba(255,255,255,.09);
-      --border:rgba(220,205,255,.15);
-      --text:#f8f5ff;
-      --muted:#beb4d5;
-      --purple-1:#8f6cff;
-      --purple-2:#bda6ff;
-      --purple-3:#6e4de6;
-      --shadow:0 18px 45px rgba(20,10,45,.34);
+      --bg:#0f0c18;
+      --panel:#171225;
+      --panel-2:#1b1530;
+      --border:rgba(170,130,255,.14);
+      --text:#f7f2ff;
+      --muted:#b9add2;
+      --purple:#8b5cf6;
+      --purple-2:#a879ff;
+      --purple-3:#6d3fe0;
+      --track:rgba(255,255,255,.075);
     }
+
     *{box-sizing:border-box}
+
     html,body{
       margin:0;
       min-height:100%;
-      font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif
-    }
-    body{
+      font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+      background:transparent;
       color:var(--text);
-      background:
-        radial-gradient(circle at 16% 14%, rgba(143,108,255,.27), transparent 34%),
-        radial-gradient(circle at 84% 82%, rgba(189,166,255,.17), transparent 32%),
-        linear-gradient(145deg,#120d20,#171026 58%,#100b1b);
-      padding:18px;
     }
-    .shell{
-      width:min(100%,980px);
+
+    body{
+      padding:8px;
+    }
+
+    .widget{
+      width:100%;
+      max-width:720px;
       margin:auto;
-      border:1px solid var(--border);
-      border-radius:24px;
-      padding:16px;
-      background:rgba(18,13,32,.74);
-      box-shadow:var(--shadow);
-      backdrop-filter:blur(18px);
-      -webkit-backdrop-filter:blur(18px);
-    }
-    .topbar{
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:14px;
-      padding:2px 4px 14px;
-    }
-    .greeting{
-      font-size:12px;
-      font-weight:800;
-      letter-spacing:.08em;
-      color:var(--muted);
-      text-transform:uppercase;
-    }
-    .date{
-      font-size:12px;
-      color:var(--muted);
-      text-transform:capitalize;
-    }
-    .grid{
-      display:grid;
-      grid-template-columns:1fr 1.25fr 1.2fr;
-      gap:12px;
-    }
-    .card{
-      position:relative;
-      min-height:190px;
+      padding:10px;
       border:1px solid var(--border);
       border-radius:18px;
-      padding:18px;
-      background:var(--card);
+      background:
+        radial-gradient(circle at 12% 10%, rgba(139,92,246,.12), transparent 28%),
+        linear-gradient(145deg, rgba(20,15,33,.98), rgba(14,11,24,.98));
+      box-shadow:0 16px 38px rgba(0,0,0,.22);
       overflow:hidden;
-      transition:transform .2s ease, background .2s ease;
     }
-    .card:hover{transform:translateY(-2px);background:var(--card-hover)}
+
+    .reminder,
+    .card{
+      border:1px solid var(--border);
+      background:
+        radial-gradient(circle at 92% 10%, rgba(139,92,246,.10), transparent 24%),
+        linear-gradient(145deg, rgba(28,22,46,.95), rgba(19,15,33,.95));
+      border-radius:15px;
+    }
+
+    .reminder{
+      position:relative;
+      padding:15px 48px 15px 16px;
+      min-height:94px;
+      display:flex;
+      flex-direction:column;
+      justify-content:center;
+    }
+
     .label{
       display:flex;
       align-items:center;
       gap:8px;
-      font-size:12px;
-      font-weight:800;
-      letter-spacing:.08em;
-      color:var(--muted);
-      text-transform:uppercase;
-    }
-    .value{
-      margin-top:16px;
-      font-size:42px;
-      font-weight:850;
+      font-size:11px;
       line-height:1;
-      letter-spacing:-.04em;
+      font-weight:800;
+      letter-spacing:.09em;
+      text-transform:uppercase;
+      color:#c4b5fd;
     }
-    .sub{
-      margin-top:8px;
-      color:var(--muted);
-      font-size:14px;
-      line-height:1.45;
-    }
-    .focus{
-      margin-top:18px;
-      font-size:23px;
-      font-weight:760;
-      line-height:1.24;
-      letter-spacing:-.02em;
-      max-width:26ch;
+
+    .reminder-text{
+      margin-top:12px;
+      font-size:18px;
+      line-height:1.35;
+      font-weight:650;
+      letter-spacing:-.015em;
+      max-width:52ch;
       transition:opacity .25s ease, transform .25s ease;
     }
-    .focus.fade{opacity:0;transform:translateY(5px)}
-    .special{
-      margin-top:10px;
-      font-size:12px;
+
+    .reminder-text.fade{
+      opacity:0;
+      transform:translateY(4px);
+    }
+
+    .sparkles{
+      position:absolute;
+      right:16px;
+      top:50%;
+      transform:translateY(-50%);
+      font-size:22px;
       color:var(--purple-2);
-      font-weight:700;
-      min-height:15px;
+      opacity:.9;
+      user-select:none;
     }
-    .progress-wrap{margin-top:22px}
-    .progress-head{
-      display:flex;
-      justify-content:space-between;
-      gap:12px;
-      align-items:flex-end;
+
+    .grid{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:10px;
+      margin-top:10px;
     }
-    .percent{
-      font-size:34px;
-      font-weight:850;
-      letter-spacing:-.04em;
-    }
-    .count{
-      font-size:12px;
-      color:var(--muted);
-      padding-bottom:4px;
-    }
-    .bar{
-      margin-top:14px;
-      height:10px;
-      border-radius:999px;
-      background:rgba(255,255,255,.08);
+
+    .card{
+      min-height:132px;
+      padding:15px 16px;
+      position:relative;
       overflow:hidden;
     }
-    .fill{
-      height:100%;
-      width:0;
-      border-radius:inherit;
-      background:linear-gradient(90deg,var(--purple-3),var(--purple-1),var(--purple-2));
-      transition:width .8s cubic-bezier(.2,.8,.2,1);
-      box-shadow:0 0 18px rgba(143,108,255,.45);
-    }
-    .mini{
-      margin-top:12px;
-      font-size:13px;
-      color:var(--muted);
-    }
-    .streak::after,.progress::after,.focus-card::after{
+
+    .card::after{
       content:"";
       position:absolute;
-      width:120px;height:120px;
+      width:90px;
+      height:90px;
       border-radius:50%;
-      opacity:.18;
-      right:-44px;top:-44px;
-      background:var(--purple-1);
+      right:-36px;
+      top:-36px;
+      background:rgba(139,92,246,.10);
+      pointer-events:none;
     }
-    .focus-card::after{background:var(--purple-2)}
-    .progress::after{background:var(--purple-3)}
-    @media (max-width:760px){
-      body{padding:10px}
-      .shell{border-radius:18px;padding:10px}
+
+    .metric-row{
+      display:flex;
+      align-items:flex-end;
+      justify-content:space-between;
+      gap:12px;
+      margin-top:14px;
+    }
+
+    .big{
+      font-size:42px;
+      line-height:.95;
+      font-weight:850;
+      letter-spacing:-.05em;
+      color:var(--purple-2);
+    }
+
+    .unit{
+      font-size:18px;
+      color:var(--muted);
+      font-weight:700;
+      margin-left:3px;
+    }
+
+    .sub{
+      margin-top:10px;
+      color:var(--muted);
+      font-size:13px;
+      line-height:1.35;
+    }
+
+    .progress-side{
+      display:flex;
+      align-items:center;
+      gap:14px;
+    }
+
+    .ring{
+      --p:0;
+      width:76px;
+      height:76px;
+      border-radius:50%;
+      background:
+        radial-gradient(circle at center, var(--panel-2) 56%, transparent 57%),
+        conic-gradient(var(--purple-2) calc(var(--p) * 1%), var(--track) 0);
+      display:grid;
+      place-items:center;
+      flex:0 0 auto;
+      box-shadow:inset 0 0 14px rgba(139,92,246,.08);
+    }
+
+    .ring span{
+      font-size:16px;
+      font-weight:800;
+      color:var(--purple-2);
+    }
+
+    @media (max-width:560px){
+      body{padding:4px}
+      .widget{padding:8px;border-radius:15px}
+      .reminder{min-height:84px;padding:13px 42px 13px 14px}
+      .reminder-text{font-size:16px;margin-top:10px}
+      .sparkles{right:13px;font-size:19px}
+      .grid{gap:8px;margin-top:8px}
+      .card{padding:13px;min-height:122px}
+      .big{font-size:36px}
+      .unit{font-size:16px}
+      .ring{width:66px;height:66px}
+      .ring span{font-size:14px}
+    }
+
+    @media (max-width:390px){
       .grid{grid-template-columns:1fr}
-      .card{min-height:170px}
-      .focus{font-size:22px}
-      .topbar{align-items:flex-start;flex-direction:column;gap:4px}
+      .card{min-height:112px}
+      .progress-side{justify-content:space-between}
     }
   </style>
 </head>
 <body>
-  <main class="shell">
-    <div class="topbar">
-      <div class="greeting" id="greeting"></div>
-      <div class="date" id="date"></div>
-    </div>
+  <main class="widget">
+    <section class="reminder">
+      <div class="label">💜 Un recordatorio</div>
+      <div class="reminder-text" id="reminder"></div>
+      <div class="sparkles">✦</div>
+    </section>
 
     <section class="grid">
-      <article class="card streak">
+      <article class="card">
         <div class="label">🔥 Racha</div>
-        <div class="value"><span id="streak">0</span> <span style="font-size:.42em;color:var(--muted)">días</span></div>
+        <div class="metric-row">
+          <div>
+            <span class="big" id="streak">0</span>
+            <span class="unit" id="streakUnit">días</span>
+          </div>
+        </div>
         <div class="sub" id="streakMessage"></div>
       </article>
 
-      <article class="card focus-card">
-        <div class="label">💜 Un recordatorio</div>
-        <div class="special" id="specialLabel"></div>
-        <div class="focus" id="focus"></div>
-        <div class="sub" id="focusSub"></div>
-      </article>
-
-      <article class="card progress">
+      <article class="card">
         <div class="label">📈 Progreso semanal</div>
-        <div class="progress-wrap">
-          <div class="progress-head">
-            <div class="percent" id="percent">0%</div>
-            <div class="count"><span id="activeDays">0</span> de 7 días activos</div>
+        <div class="metric-row progress-side">
+          <div>
+            <div>
+              <span class="big" id="activeDays">0</span>
+              <span class="unit">/7</span>
+            </div>
+            <div class="sub" id="progressMessage"></div>
           </div>
-          <div class="bar"><div class="fill" id="fill"></div></div>
-          <div class="mini" id="progressMessage"></div>
+
+          <div class="ring" id="ring">
+            <span id="percent">0%</span>
+          </div>
         </div>
       </article>
     </section>
   </main>
 
   <script>
-    const messages = {
-      morning: {
-        greeting: "Buenos días",
-        sub: "Con calma, pero concentrado.",
-        phrases: [
-          "Amor, empieza nomás. Yo sé que te va a salir bonito.",
-          "Sigue concentrado, amor. Una cosa a la vez.",
-          "Chambea un ratito y después descansas tranquilo.",
-          "Hoy solo necesitas avanzar un poquito.",
-          "Amor, confía más en lo que haces.",
-          "Empieza por lo más fácil y agarra ritmo.",
-          "No pienses tanto en todo. Haz solo lo que sigue.",
-          "Estoy orgullosa de ti. Ahora concéntrate un ratito.",
-          "Hazlo a tu ritmo, pero no lo sueltes.",
-          "Amor, abre el proyecto y empieza. Tú puedes."
-        ]
-      },
-      afternoon: {
-        greeting: "Buenas tardes",
-        sub: "Ya avanzaste. Sigue con lo que toca.",
-        phrases: [
-          "Amor, sigue concentrado. Ya después descansas.",
-          "Vas bien. No te cambies de proyecto ahorita.",
-          "Chambea esta parte y luego te das un respiro.",
-          "No tiene que quedar perfecto de una. Solo sigue.",
-          "Estoy orgullosa de todo el esfuerzo que le metes.",
-          "Amor, termina esto primero y después vemos lo demás.",
-          "Sigue así. Ya falta menos de lo que parece.",
-          "Confío en ti, pero concéntrate pues.",
-          "No te presiones tanto. Solo sigue avanzando.",
-          "Haz una cosa a la vez, amor."
-        ]
-      },
-      night: {
-        greeting: "Buenas noches",
-        sub: "Un último avance y a descansar.",
-        phrases: [
-          "Amor, deja una cosita lista para mañana.",
-          "Guarda el proyecto antes de cerrar, por favor.",
-          "Estoy orgullosa de ti. Ya casi terminas por hoy.",
-          "Chambea un ratito más y después descansa.",
-          "No hace falta acabar todo. Solo déjalo encaminado.",
-          "Amor, termina esta parte y ya puedes cerrar tranquilo.",
-          "Te amo. Ahora guarda todo antes de que pase algo.",
-          "Hoy avanzaste, y eso ya cuenta bastante.",
-          "Sigue concentrado un poquito más. Ya falta poco.",
-          "Descansa cuando termines. Te lo mereces."
-        ]
-      }
-    };
+    const normalMessages = [
+      "Amor, sigue concentrado. Yo sé que puedes con esto.",
+      "Chambea un ratito más, amor. Ya después descansas.",
+      "Estoy orgullosa de ti. Sigue avanzando a tu ritmo.",
+      "Amor, una cosa a la vez. Tú puedes.",
+      "Sigue concentrado, amor. Ya falta menos.",
+      "Confía más en lo que haces. Yo confío muchísimo en ti.",
+      "Hazlo con calma, pero no lo sueltes.",
+      "Amor, termina esta parte primero y luego descansas.",
+      "Estoy orgullosa de todo el esfuerzo que le metes.",
+      "Sigue así, amor. Ya estás avanzando.",
+      "Chambea tranquilo. Yo sé que va a quedar bonito.",
+      "No te presiones tanto, amor. Solo sigue.",
+      "Concéntrate un ratito más. Yo sé que puedes.",
+      "Amor, avanza aunque sea un poquito. Todo cuenta.",
+      "Te amo. Ahora sigue chambeando con calma."
+    ];
 
     const specialMessages = [
       "Solo pasaba a decirte que te amo. Ahora sigue chambeando.",
-      "Estoy muy orgullosa de ti, amor.",
+      "Por si no te lo dije hoy: estoy muy orgullosa de ti.",
+      "Te amo mucho. Sigue concentrado, amor.",
       "Confía un poquito más en ti. Yo sí confío muchísimo.",
-      "Te amo. Sigue haciendo lo tuyo.",
-      "Por si no te lo dije hoy: estoy orgullosa de ti.",
-      "Gracias por todo el esfuerzo que haces.",
-      "Ya quiero ver cómo queda. Sigue concentrado.",
       "Estoy de tu lado siempre, amor.",
       "Tú sigue avanzando. Yo sigo creyendo en ti.",
-      "Te amo mucho. Ahora concéntrate, por favor."
+      "Gracias por todo el esfuerzo que haces.",
+      "Ya quiero ver cómo queda. Sigue concentrado.",
+      "Te amo. Hazlo a tu ritmo, pero sigue.",
+      "Estoy muy orgullosa de ti, amor."
     ];
 
-    const ACTIVITY_KEY = "productividad_activity_days_v4";
-    const VISITS_KEY = "productividad_visit_count_v1";
+    const ACTIVITY_KEY = "recordatorio_activity_days_v2";
+    const VISITS_KEY = "recordatorio_visit_count_v2";
 
-    function localDateKey(date = new Date()){
+    function dateKey(date = new Date()){
       const y = date.getFullYear();
       const m = String(date.getMonth()+1).padStart(2,"0");
       const d = String(date.getDate()).padStart(2,"0");
@@ -289,61 +292,70 @@
       return new Date(y,m-1,d);
     }
 
-    function getActivity(){
+    function readDays(){
       try{
-        const raw = JSON.parse(localStorage.getItem(ACTIVITY_KEY) || "[]");
-        return Array.from(new Set(raw)).sort();
+        return Array.from(
+          new Set(JSON.parse(localStorage.getItem(ACTIVITY_KEY) || "[]"))
+        ).sort();
       }catch{
         return [];
       }
     }
 
-    function saveActivity(days){
-      localStorage.setItem(ACTIVITY_KEY, JSON.stringify(days));
-    }
-
     function registerToday(){
-      const days = getActivity();
-      const today = localDateKey();
+      const days = readDays();
+      const today = dateKey();
+
       if(!days.includes(today)){
         days.push(today);
         days.sort();
-        saveActivity(days);
+        localStorage.setItem(ACTIVITY_KEY, JSON.stringify(days));
       }
+
       return days;
     }
 
     function registerVisit(){
-      const next = Number(localStorage.getItem(VISITS_KEY) || "0") + 1;
-      localStorage.setItem(VISITS_KEY, String(next));
-      return next;
+      const visits = Number(localStorage.getItem(VISITS_KEY) || "0") + 1;
+      localStorage.setItem(VISITS_KEY, String(visits));
+      return visits;
     }
 
-    function currentStreak(days){
+    function getStreak(days){
       if(!days.length) return 0;
+
       const set = new Set(days);
-      let cursor = new Date();
+      const cursor = new Date();
       let streak = 0;
-      if(!set.has(localDateKey(cursor))) cursor.setDate(cursor.getDate()-1);
-      while(set.has(localDateKey(cursor))){
+
+      if(!set.has(dateKey(cursor))){
+        cursor.setDate(cursor.getDate()-1);
+      }
+
+      while(set.has(dateKey(cursor))){
         streak++;
         cursor.setDate(cursor.getDate()-1);
       }
+
       return streak;
     }
 
-    function startOfWeek(date){
-      const copy = new Date(date.getFullYear(),date.getMonth(),date.getDate());
-      const day = copy.getDay();
-      copy.setDate(copy.getDate() + (day === 0 ? -6 : 1-day));
-      return copy;
+    function weekStart(date){
+      const result = new Date(date.getFullYear(),date.getMonth(),date.getDate());
+      const day = result.getDay();
+      result.setDate(result.getDate() + (day === 0 ? -6 : 1-day));
+      return result;
     }
 
-    function activeDaysThisWeek(days){
-      const start = startOfWeek(new Date());
+    function activeThisWeek(days){
+      const start = weekStart(new Date());
       const end = new Date(start);
       end.setDate(start.getDate()+6);
-      return days.map(parseKey).filter(d => d >= start && d <= end).length;
+
+      return days
+        .map(parseKey)
+        .filter(day => day >= start && day <= end)
+        .length;
     }
 
     function dayOfYear(date){
@@ -351,73 +363,54 @@
       return Math.floor((date-start)/86400000);
     }
 
-    function getPeriod(hour){
-      if(hour < 12) return "morning";
-      if(hour < 19) return "afternoon";
-      return "night";
-    }
+    function chooseMessage(visits){
+      const special = visits % 7 === 0;
 
-    function chooseMessage(now, visitCount){
-      const period = getPeriod(now.getHours());
-      const config = messages[period];
-
-      // Mensaje especial aproximadamente cada 7 aperturas.
-      const isSpecial = visitCount % 7 === 0;
-      if(isSpecial){
-        return {
-          greeting: config.greeting,
-          sub: "Solo para que no se te olvide.",
-          label: "Mensajito especial",
-          text: specialMessages[Math.floor(visitCount / 7) % specialMessages.length]
-        };
+      if(special){
+        return specialMessages[
+          Math.floor(visits / 7) % specialMessages.length
+        ];
       }
 
-      return {
-        greeting: config.greeting,
-        sub: config.sub,
-        label: "",
-        text: config.phrases[dayOfYear(now) % config.phrases.length]
-      };
+      return normalMessages[
+        dayOfYear(new Date()) % normalMessages.length
+      ];
     }
 
     function render(){
-      const now = new Date();
       const days = registerToday();
       const visits = registerVisit();
-      const streak = currentStreak(days);
-      const active = activeDaysThisWeek(days);
-      const pct = Math.round((active/7)*100);
-      const chosen = chooseMessage(now, visits);
+      const streak = getStreak(days);
+      const active = activeThisWeek(days);
+      const percent = Math.round((active/7)*100);
 
-      document.getElementById("greeting").textContent = chosen.greeting;
-      document.getElementById("date").textContent =
-        now.toLocaleDateString("es-PE",{weekday:"long",day:"numeric",month:"long"});
-      document.getElementById("specialLabel").textContent = chosen.label;
-      document.getElementById("focusSub").textContent = chosen.sub;
+      const reminder = document.getElementById("reminder");
+      reminder.classList.add("fade");
 
-      const focus = document.getElementById("focus");
-      focus.classList.add("fade");
       setTimeout(() => {
-        focus.textContent = chosen.text;
-        focus.classList.remove("fade");
-      }, 150);
+        reminder.textContent = chooseMessage(visits);
+        reminder.classList.remove("fade");
+      }, 120);
 
       document.getElementById("streak").textContent = streak;
+      document.getElementById("streakUnit").textContent =
+        streak === 1 ? "día" : "días";
+
       document.getElementById("streakMessage").textContent =
         streak <= 1 ? "Ya empezaste. Ahora solo sigue." :
         streak < 4 ? "Vas agarrando ritmo, amor." :
         streak < 8 ? "Mira cómo sigues avanzando." :
         streak < 15 ? "Estoy orgullosa de tu constancia." :
-        "Bueno, ya estás imparable.";
+        "Ya estás imparable.";
 
       document.getElementById("activeDays").textContent = active;
-      document.getElementById("percent").textContent = pct + "%";
-      document.getElementById("fill").style.width = pct + "%";
+      document.getElementById("percent").textContent = percent + "%";
+      document.getElementById("ring").style.setProperty("--p", percent);
+
       document.getElementById("progressMessage").textContent =
-        active <= 1 ? "Ya cuenta. Mañana seguimos." :
-        active < 4 ? "La semana va tomando forma." :
-        active < 7 ? "Vas bien, amor. Sigue así." :
-        "Semana completa. Estoy muy orgullosa de ti.";
+        active <= 1 ? "día activo" :
+        active < 7 ? "días activos" :
+        "semana completa";
     }
 
     render();
