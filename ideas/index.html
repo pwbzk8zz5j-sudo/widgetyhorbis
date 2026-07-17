@@ -1,1 +1,462 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Bombillita de ideas</title>
 
+  <style>
+    :root{
+      --bg:#0b0a0f;
+      --panel:#15131c;
+      --text:#f6f3fb;
+      --muted:#aaa2b8;
+      --purple:#a855f7;
+      --purple-2:#7c3aed;
+      --purple-soft:#d8b4fe;
+      --border:rgba(255,255,255,.09);
+    }
+
+    *{box-sizing:border-box}
+
+    html,body{
+      margin:0;
+      min-height:100%;
+      font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+      background:transparent;
+      color:var(--text);
+      overflow:hidden;
+    }
+
+    body{padding:8px}
+
+    .widget{
+      position:relative;
+      width:min(100%,900px);
+      height:330px;
+      margin:auto;
+      overflow:hidden;
+      border:1px solid var(--border);
+      border-radius:24px;
+      background:
+        radial-gradient(circle at 50% 35%, rgba(168,85,247,.12), transparent 28%),
+        radial-gradient(circle at 88% 12%, rgba(168,85,247,.16), transparent 25%),
+        radial-gradient(circle at 12% 90%, rgba(124,58,237,.10), transparent 25%),
+        linear-gradient(145deg,var(--panel),var(--bg));
+      box-shadow:0 18px 50px rgba(0,0,0,.28);
+      touch-action:none;
+      user-select:none;
+    }
+
+    .top{
+      position:absolute;
+      left:18px;
+      top:16px;
+      z-index:4;
+      pointer-events:none;
+    }
+
+    .eyebrow{
+      color:var(--purple-soft);
+      font-size:12px;
+      font-weight:850;
+      letter-spacing:.09em;
+      text-transform:uppercase;
+    }
+
+    .hint{
+      margin-top:5px;
+      color:var(--muted);
+      font-size:13px;
+    }
+
+    .message{
+      position:absolute;
+      left:50%;
+      bottom:28px;
+      transform:translateX(-50%);
+      width:min(82%,620px);
+      text-align:center;
+      font-size:clamp(16px,2.6vw,22px);
+      line-height:1.45;
+      font-weight:750;
+      letter-spacing:-.02em;
+      z-index:3;
+      transition:opacity .25s ease, transform .25s ease;
+      pointer-events:none;
+    }
+
+    .message.fade{
+      opacity:0;
+      transform:translate(-50%,6px);
+    }
+
+    .sub{
+      display:block;
+      margin-top:8px;
+      color:var(--muted);
+      font-size:12px;
+      font-weight:600;
+      letter-spacing:0;
+    }
+
+    .bulb{
+      position:absolute;
+      left:calc(50% - 42px);
+      top:72px;
+      width:84px;
+      height:108px;
+      cursor:grab;
+      z-index:5;
+      transform-origin:50% 15%;
+      filter:drop-shadow(0 12px 18px rgba(0,0,0,.22));
+    }
+
+    .bulb:active{cursor:grabbing}
+
+    .glass{
+      position:absolute;
+      left:10px;
+      top:0;
+      width:64px;
+      height:70px;
+      border-radius:50% 50% 44% 44%;
+      background:
+        radial-gradient(circle at 35% 25%, rgba(255,255,255,.72), transparent 11%),
+        radial-gradient(circle at 50% 42%, rgba(216,180,254,.82), rgba(168,85,247,.28) 45%, rgba(124,58,237,.13) 68%, rgba(255,255,255,.04) 72%);
+      border:1px solid rgba(255,255,255,.19);
+      box-shadow:
+        inset 0 0 22px rgba(255,255,255,.10),
+        0 0 0 rgba(168,85,247,0);
+      transition:box-shadow .25s ease, filter .25s ease, transform .2s ease;
+    }
+
+    .filament{
+      position:absolute;
+      left:50%;
+      top:41px;
+      width:24px;
+      height:20px;
+      transform:translateX(-50%);
+      border:2px solid rgba(246,243,251,.55);
+      border-top:none;
+      border-radius:0 0 10px 10px;
+      opacity:.78;
+    }
+
+    .neck{
+      position:absolute;
+      left:27px;
+      top:63px;
+      width:30px;
+      height:15px;
+      border-radius:6px 6px 3px 3px;
+      background:linear-gradient(180deg,#756f80,#3b3742);
+      border:1px solid rgba(255,255,255,.10);
+    }
+
+    .base{
+      position:absolute;
+      left:24px;
+      top:75px;
+      width:36px;
+      height:27px;
+      border-radius:3px 3px 10px 10px;
+      background:
+        repeating-linear-gradient(
+          to bottom,
+          #4c4754 0 4px,
+          #2c2930 4px 7px
+        );
+      border:1px solid rgba(255,255,255,.08);
+    }
+
+    .tip{
+      position:absolute;
+      left:34px;
+      top:100px;
+      width:16px;
+      height:6px;
+      border-radius:0 0 8px 8px;
+      background:#2f2b35;
+    }
+
+    .bulb.on .glass{
+      box-shadow:
+        inset 0 0 26px rgba(255,255,255,.22),
+        0 0 24px rgba(168,85,247,.72),
+        0 0 58px rgba(168,85,247,.30);
+      filter:brightness(1.25) saturate(1.2);
+      transform:scale(1.03);
+    }
+
+    .spark{
+      position:absolute;
+      width:8px;
+      height:8px;
+      border-radius:50%;
+      background:var(--purple-soft);
+      box-shadow:0 0 12px rgba(216,180,254,.9);
+      opacity:0;
+      pointer-events:none;
+      z-index:2;
+    }
+
+    .spark.show{
+      animation:spark .8s ease-out forwards;
+    }
+
+    .flash{
+      position:absolute;
+      inset:0;
+      background:radial-gradient(circle at center, rgba(216,180,254,.25), transparent 55%);
+      opacity:0;
+      pointer-events:none;
+      z-index:1;
+    }
+
+    .flash.show{
+      animation:flash .6s ease-out;
+    }
+
+    .badge{
+      position:absolute;
+      right:16px;
+      top:15px;
+      padding:8px 10px;
+      border-radius:999px;
+      background:rgba(255,255,255,.035);
+      border:1px solid var(--border);
+      color:var(--muted);
+      font-size:11px;
+      font-weight:750;
+      z-index:4;
+      pointer-events:none;
+    }
+
+    @keyframes spark{
+      0%{opacity:0; transform:scale(.4) translate(0,0)}
+      25%{opacity:1}
+      100%{opacity:0; transform:scale(1.1) translate(var(--x),var(--y))}
+    }
+
+    @keyframes flash{
+      0%{opacity:0}
+      35%{opacity:1}
+      100%{opacity:0}
+    }
+
+    @keyframes idleSwing{
+      0%,100%{transform:rotate(-2deg)}
+      50%{transform:rotate(2deg)}
+    }
+
+    .bulb.idle{
+      animation:idleSwing 2.6s ease-in-out infinite;
+    }
+
+    @media(max-width:520px){
+      .widget{height:360px}
+      .message{
+        bottom:26px;
+        width:88%;
+      }
+      .badge{display:none}
+    }
+  </style>
+</head>
+
+<body>
+  <main class="widget" id="widget">
+    <div class="flash" id="flash"></div>
+
+    <div class="top">
+      <div class="eyebrow">💡 Cajita de ideas</div>
+      <div class="hint">Mueve la bombillita mientras piensas.</div>
+    </div>
+
+    <div class="badge" id="badge">clic para encender</div>
+
+    <div class="bulb" id="bulb" role="button" aria-label="Bombillita interactiva">
+      <div class="glass">
+        <div class="filament"></div>
+      </div>
+      <div class="neck"></div>
+      <div class="base"></div>
+      <div class="tip"></div>
+    </div>
+
+    <div class="message" id="message">
+      No hace falta que sea una buena idea. Solo no la olvides.
+      <span class="sub">Haz clic en la bombilla para cambiar la frase.</span>
+    </div>
+  </main>
+
+  <script>
+    const widget = document.getElementById("widget");
+    const bulb = document.getElementById("bulb");
+    const message = document.getElementById("message");
+    const flash = document.getElementById("flash");
+    const badge = document.getElementById("badge");
+
+    const phrases = [
+      "Las mejores ideas casi siempre llegan desordenadas.",
+      "Escríbela ahora. Ya decidirás después qué hacer con ella.",
+      "Una idea rara también merece una oportunidad.",
+      "No la juzgues todavía. Solo guárdala.",
+      "Quizá hoy sea solo una nota. Mañana puede ser un proyecto.",
+      "Tu próxima buena idea puede empezar con una tontería.",
+      "Anota eso que no quieres olvidar.",
+      "¿Y si pruebas justo lo contrario?",
+      "No necesitas la idea completa. Solo el primer pedacito.",
+      "A veces la inspiración llega cuando dejas de perseguirla."
+    ];
+
+    let phraseIndex = 0;
+    let dragging = false;
+    let moved = false;
+    let offsetX = 0;
+    let offsetY = 0;
+    let charge = 0;
+    let idleTimer;
+
+    function currentNightPhrase(){
+      const hour = new Date().getHours();
+      if(hour >= 1 && hour < 5){
+        return "Las ideas nocturnas también cuentan. Solo no olvides dormir después.";
+      }
+      return null;
+    }
+
+    function setMessage(text){
+      message.classList.add("fade");
+      setTimeout(() => {
+        message.innerHTML = `${text}<span class="sub">Haz clic en la bombilla para cambiar la frase.</span>`;
+        message.classList.remove("fade");
+      }, 180);
+    }
+
+    function nextPhrase(){
+      const night = currentNightPhrase();
+
+      if(night && Math.random() < .25){
+        setMessage(night);
+      }else{
+        phraseIndex = (phraseIndex + 1) % phrases.length;
+        setMessage(phrases[phraseIndex]);
+      }
+    }
+
+    function glow(){
+      bulb.classList.add("on");
+      flash.classList.remove("show");
+      void flash.offsetWidth;
+      flash.classList.add("show");
+
+      setTimeout(() => bulb.classList.remove("on"), 650);
+    }
+
+    function createSparks(){
+      const bulbRect = bulb.getBoundingClientRect();
+      const widgetRect = widget.getBoundingClientRect();
+
+      for(let i = 0; i < 8; i++){
+        const spark = document.createElement("span");
+        spark.className = "spark";
+        spark.style.left = `${bulbRect.left - widgetRect.left + bulbRect.width/2}px`;
+        spark.style.top = `${bulbRect.top - widgetRect.top + 28}px`;
+
+        const angle = (Math.PI * 2 * i) / 8;
+        const distance = 36 + Math.random() * 28;
+        spark.style.setProperty("--x", `${Math.cos(angle) * distance}px`);
+        spark.style.setProperty("--y", `${Math.sin(angle) * distance}px`);
+
+        widget.appendChild(spark);
+        requestAnimationFrame(() => spark.classList.add("show"));
+        setTimeout(() => spark.remove(), 850);
+      }
+    }
+
+    function resetIdle(){
+      clearTimeout(idleTimer);
+      bulb.classList.remove("idle");
+
+      idleTimer = setTimeout(() => {
+        if(!dragging) bulb.classList.add("idle");
+      }, 12000);
+    }
+
+    function clamp(value, min, max){
+      return Math.min(Math.max(value, min), max);
+    }
+
+    function moveBulb(clientX, clientY){
+      const rect = widget.getBoundingClientRect();
+      const x = clamp(clientX - rect.left - offsetX, 8, rect.width - bulb.offsetWidth - 8);
+      const y = clamp(clientY - rect.top - offsetY, 46, rect.height - bulb.offsetHeight - 78);
+
+      bulb.style.left = `${x}px`;
+      bulb.style.top = `${y}px`;
+    }
+
+    bulb.addEventListener("pointerdown", e => {
+      dragging = true;
+      moved = false;
+      bulb.classList.remove("idle");
+      bulb.setPointerCapture(e.pointerId);
+
+      const rect = bulb.getBoundingClientRect();
+      offsetX = e.clientX - rect.left;
+      offsetY = e.clientY - rect.top;
+
+      resetIdle();
+    });
+
+    bulb.addEventListener("pointermove", e => {
+      if(!dragging) return;
+
+      moved = true;
+      moveBulb(e.clientX, e.clientY);
+      charge++;
+
+      if(charge >= 40){
+        charge = 0;
+        glow();
+        createSparks();
+        setMessage("¡Idea desbloqueada!");
+      }
+    });
+
+    bulb.addEventListener("pointerup", e => {
+      dragging = false;
+      bulb.releasePointerCapture(e.pointerId);
+
+      if(!moved){
+        glow();
+        nextPhrase();
+      }else{
+        bulb.animate(
+          [
+            {transform:"scale(1)"},
+            {transform:"scale(1.06)"},
+            {transform:"scale(1)"}
+          ],
+          {duration:260,easing:"ease-out"}
+        );
+      }
+
+      resetIdle();
+    });
+
+    bulb.addEventListener("dblclick", () => {
+      glow();
+      createSparks();
+      setMessage("¡Se prendió el foco!");
+    });
+
+    widget.addEventListener("pointerdown", resetIdle);
+
+    resetIdle();
+  </script>
+</body>
+</html>
