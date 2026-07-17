@@ -11,6 +11,7 @@
       --text:#f6f3fb;
       --muted:#a9a3b3;
       --accent:#a855f7;
+      --accent-soft:#d8b4fe;
       --border:rgba(255,255,255,.09);
     }
 
@@ -29,7 +30,7 @@
     .hero{
       position:relative;
       overflow:hidden;
-      min-height:240px;
+      min-height:180px;
       padding:24px 30px;
       border:1px solid var(--border);
       border-radius:24px;
@@ -38,6 +39,11 @@
         radial-gradient(circle at 12% 90%, rgba(124,58,237,.18), transparent 32%),
         linear-gradient(145deg,var(--card),var(--bg));
       box-shadow:0 18px 50px rgba(0,0,0,.35);
+      transition:min-height .3s ease;
+    }
+
+    .hero.sleep-mode{
+      min-height:255px;
     }
 
     h1{
@@ -52,28 +58,6 @@
     .date{
       font-size:16px;
       color:var(--muted);
-      margin-bottom:24px;
-    }
-
-    .quote{
-      max-width:720px;
-      padding:18px 20px;
-      border:1px solid var(--border);
-      border-radius:18px;
-      background:rgba(255,255,255,.035);
-      backdrop-filter:blur(10px);
-    }
-
-    .quote-label{
-      color:#d8b4fe;
-      font-size:13px;
-      font-weight:700;
-      margin-bottom:8px;
-    }
-
-    .quote-text{
-      font-size:18px;
-      line-height:1.55;
     }
 
     .clock{
@@ -85,22 +69,72 @@
       color:var(--muted);
     }
 
+    .sleep-note{
+      display:none;
+      max-width:640px;
+      margin-top:20px;
+      padding:13px 16px;
+      border:1px solid rgba(216,180,254,.18);
+      border-radius:15px;
+      background:rgba(255,255,255,.035);
+      backdrop-filter:blur(10px);
+      -webkit-backdrop-filter:blur(10px);
+      animation:appear .35s ease both;
+    }
+
+    .sleep-note.visible{
+      display:block;
+    }
+
+    .sleep-label{
+      margin-bottom:6px;
+      color:var(--accent-soft);
+      font-size:12px;
+      font-weight:800;
+      letter-spacing:.04em;
+      text-transform:uppercase;
+    }
+
+    .sleep-text{
+      color:#eee8f6;
+      font-size:15px;
+      line-height:1.45;
+    }
+
+    @keyframes appear{
+      from{
+        opacity:0;
+        transform:translateY(6px);
+      }
+      to{
+        opacity:1;
+        transform:translateY(0);
+      }
+    }
+
     @media(max-width:640px){
       body{padding:8px}
+
       .hero{
         padding:22px;
+        min-height:210px;
+      }
+
+      .hero.sleep-mode{
         min-height:290px;
       }
+
       .clock{
         position:static;
         margin-bottom:12px;
       }
+
       h1{margin-top:4px}
     }
   </style>
 </head>
 <body>
-  <main class="hero">
+  <main class="hero" id="hero">
     <div class="clock" id="clock"></div>
 
     <h1>
@@ -110,43 +144,71 @@
 
     <div class="date" id="date"></div>
 
-    <section class="quote">
-      <div class="quote-label">💌 Mensaje de Yaiza</div>
-      <div class="quote-text" id="message"></div>
+    <section class="sleep-note" id="sleepNote">
+      <div class="sleep-label">🌙 Hora de descansar</div>
+      <div class="sleep-text" id="sleepMessage"></div>
     </section>
   </main>
 
   <script>
-    // Edita aquí tus mensajitos.
-    const mensajes = [
-      "Mi amor, estoy muy orgullosa de ti. Hoy no tienes que hacerlo todo, solo empezar por una cosa 💛",
-      "Confío mucho en ti y en todo lo que estás construyendo. Te amo ❤️",
-      "Respira, toma agua y sigue a tu ritmo. No estás llegando tarde a tu propia vida 💜",
-      "Lo que haces tiene valor, incluso cuando todavía no se ve terminado ✨",
-      "Hoy también cuenta. Un pequeño avance sigue siendo avance 🫶"
+    const mensajesDormir = [
+      "Amor... guarda el proyecto y ven a dormir. Mañana seguimos. 🤍",
+      "El video puede esperar unas horas. Tú también necesitas descansar.",
+      "Ya hiciste bastante por hoy. Mañana seguimos.",
+      "No quiero que mañana andes como zombie. 🥺",
+      "Descansar también es parte del trabajo.",
+      "Te prometo que mañana todo saldrá mejor con sueño completo.",
+      "Cinco minutos más... ya te conozco. 😂 Mejor ven a dormir.",
+      "Tu cama te está extrañando.",
+      "Guarda el proyecto antes de que Premiere haga de las suyas. 😭",
+      "Yo ya te mandé a dormir. Ahora hazme caso. 💜"
     ];
 
-    function saludoPorHora(hora){
-      if (hora < 5) return ["¿Todavía despierto?", "🌙"];
+    function saludoPorHora(hora, minutos){
+      const horaDecimal = hora + (minutos / 60);
+
+      if (horaDecimal >= 1 && horaDecimal < 5){
+        if (horaDecimal >= 4.5){
+          return ["¿Todavía despierto?", "😴"];
+        }
+        return ["¿Todavía despierto?", "🌙"];
+      }
+
       if (hora < 12) return ["Buenos días", "☀️"];
       if (hora < 19) return ["Buenas tardes", "🌤️"];
       return ["Buenas noches", "🌙"];
     }
 
-    function mensajeDelDia(){
+    function indiceDelDia(){
       const ahora = new Date();
       const inicio = new Date(ahora.getFullYear(), 0, 0);
-      const dias = Math.floor((ahora - inicio) / 86400000);
-      return mensajes[dias % mensajes.length];
+      return Math.floor((ahora - inicio) / 86400000);
+    }
+
+    function mensajeParaDormir(ahora){
+      const esDomingo = ahora.getDay() === 0;
+      const horaDecimal = ahora.getHours() + (ahora.getMinutes() / 60);
+
+      if (esDomingo && horaDecimal >= 3 && horaDecimal < 5){
+        return "No sé qué haces despierto a esta hora... pero guarda el proyecto y ven a dormir conmigo. 🤍";
+      }
+
+      return mensajesDormir[indiceDelDia() % mensajesDormir.length];
     }
 
     function actualizar(){
       const ahora = new Date();
-      const [saludo, emoji] = saludoPorHora(ahora.getHours());
+      const horaDecimal = ahora.getHours() + (ahora.getMinutes() / 60);
+      const [saludo, emoji] = saludoPorHora(
+        ahora.getHours(),
+        ahora.getMinutes()
+      );
+
+      const mostrarMensajeDormir =
+        horaDecimal >= 2.5 && horaDecimal < 5;
 
       document.getElementById("greeting").textContent = saludo;
       document.getElementById("emoji").textContent = emoji;
-      document.getElementById("message").textContent = mensajeDelDia();
 
       document.getElementById("date").textContent =
         ahora.toLocaleDateString("es-PE", {
@@ -162,6 +224,19 @@
           minute:"2-digit",
           second:"2-digit"
         });
+
+      const sleepNote = document.getElementById("sleepNote");
+      const hero = document.getElementById("hero");
+
+      if (mostrarMensajeDormir){
+        document.getElementById("sleepMessage").textContent =
+          mensajeParaDormir(ahora);
+        sleepNote.classList.add("visible");
+        hero.classList.add("sleep-mode");
+      }else{
+        sleepNote.classList.remove("visible");
+        hero.classList.remove("sleep-mode");
+      }
     }
 
     actualizar();
