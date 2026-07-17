@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Cajita de ideas — Lámpara de lava dinámica</title>
+<title>Cajita de ideas — Slime Jar</title>
 <style>
 :root{
   --bg:#0b0a0f;
@@ -63,73 +63,69 @@ body{
 }
 .content{
   display:grid;
-  grid-template-columns:260px 1fr;
-  gap:26px;
+  grid-template-columns:280px 1fr;
+  gap:28px;
   align-items:center;
 }
-.lamp{
+.jar{
   position:relative;
-  width:260px;
-  height:146px;
+  width:280px;
+  height:160px;
+  border-radius:24px;
   overflow:hidden;
-  border:1px solid rgba(216,180,254,.14);
-  border-radius:20px;
+  cursor:pointer;
+  border:1px solid rgba(216,180,254,.16);
   background:
-    radial-gradient(circle at 50% 55%,rgba(168,85,247,.10),transparent 60%),
+    linear-gradient(90deg,rgba(255,255,255,.045),transparent 12%,transparent 88%,rgba(255,255,255,.035)),
     linear-gradient(180deg,rgba(255,255,255,.035),rgba(255,255,255,.012));
   box-shadow:
-    inset 0 0 36px rgba(0,0,0,.24),
+    inset 0 0 40px rgba(0,0,0,.26),
     0 0 28px rgba(168,85,247,.08);
-  cursor:pointer;
   isolation:isolate;
 }
-.lamp::before,
-.lamp::after{
+.jar::before,
+.jar::after{
   content:"";
   position:absolute;
   left:50%;
   transform:translateX(-50%);
-  width:78%;
+  width:72%;
   height:9px;
   border-radius:999px;
-  background:linear-gradient(90deg,rgba(255,255,255,.04),rgba(216,180,254,.18),rgba(255,255,255,.04));
-  z-index:5;
+  z-index:8;
   pointer-events:none;
+  background:linear-gradient(90deg,rgba(255,255,255,.04),rgba(216,180,254,.20),rgba(255,255,255,.04));
 }
-.lamp::before{top:8px}
-.lamp::after{bottom:8px}
-
-#lava{
+.jar::before{top:9px}
+.jar::after{bottom:9px}
+#slime{
   position:absolute;
   inset:0;
   width:100%;
   height:100%;
   display:block;
 }
-
 .glass{
   position:absolute;
   inset:0;
-  z-index:4;
+  z-index:7;
   pointer-events:none;
   background:
-    linear-gradient(90deg,rgba(255,255,255,.05),transparent 13%,transparent 87%,rgba(255,255,255,.03)),
-    radial-gradient(circle at 30% 20%,rgba(255,255,255,.05),transparent 24%);
+    linear-gradient(90deg,rgba(255,255,255,.065),transparent 10%,transparent 86%,rgba(255,255,255,.025)),
+    radial-gradient(circle at 26% 18%,rgba(255,255,255,.08),transparent 24%);
   mix-blend-mode:screen;
 }
-
 .ripple{
   position:absolute;
-  width:18px;
-  height:18px;
+  width:20px;
+  height:20px;
   border:1px solid rgba(216,180,254,.7);
   border-radius:50%;
   transform:translate(-50%,-50%) scale(.4);
   pointer-events:none;
-  animation:ripple .8s ease-out forwards;
-  z-index:6;
+  z-index:9;
+  animation:ripple .85s ease-out forwards;
 }
-
 .copy{min-width:0}
 .idea{
   font-size:18px;
@@ -145,15 +141,13 @@ body{
   color:var(--muted);
   font-size:11px;
 }
-
 @keyframes ripple{
   0%{opacity:.95;transform:translate(-50%,-50%) scale(.4)}
-  100%{opacity:0;transform:translate(-50%,-50%) scale(7)}
+  100%{opacity:0;transform:translate(-50%,-50%) scale(8)}
 }
-
-@media(max-width:650px){
+@media(max-width:680px){
   .content{grid-template-columns:1fr}
-  .lamp{width:100%}
+  .jar{width:100%}
   .badge{display:none}
   .idea{font-size:16px}
 }
@@ -163,21 +157,21 @@ body{
 <main class="widget">
   <div class="header">
     <h1>Cajita de ideas</h1>
-    <div class="badge">Inspiración en movimiento</div>
+    <div class="badge">Slime vivo</div>
   </div>
 
   <div class="content">
-    <div class="lamp" id="lamp" role="button" tabindex="0" aria-label="Lámpara de lava interactiva">
-      <canvas id="lava"></canvas>
+    <div class="jar" id="jar" role="button" tabindex="0" aria-label="Slime interactivo">
+      <canvas id="slime"></canvas>
       <div class="glass"></div>
     </div>
 
     <div class="copy">
       <div class="idea" id="idea">
-        Las ideas flotan. <strong>No las persigas.</strong> Déjalas aparecer.
+        Las ideas también necesitan <strong>tiempo para tomar forma.</strong>
       </div>
       <div class="hint">
-        Se mueve sola. Haz clic para agitar la lava y cambiar la inspiración.
+        Haz clic, arrastra o mantén presionado sobre el slime.
       </div>
     </div>
   </div>
@@ -185,35 +179,38 @@ body{
 
 <script>
 const phrases=[
-  'Las ideas flotan. <strong>No las persigas.</strong> Déjalas aparecer.',
-  'A veces la mejor idea llega cuando dejas de buscarla.',
-  'Una idea rara también merece una oportunidad.',
-  'No necesitas la idea completa. Solo el primer pedacito.',
-  'Quizá hoy sea una nota. <strong>Mañana puede ser un proyecto.</strong>',
-  'Escríbela antes de que vuelva a esconderse.',
-  '¿Y si pruebas justo lo contrario?',
-  'Tu próxima buena idea puede empezar con una tontería.',
-  'Lo incompleto también puede tener dirección.',
-  'Dale cinco minutos antes de descartarla.'
+  'Las ideas también necesitan <strong>tiempo para tomar forma.</strong>',
+  'No la descartes todavía. Déjala moverse un poco.',
+  'Una idea extraña puede ser justo la que faltaba.',
+  'Empieza por algo pequeño. Luego déjalo crecer.',
+  'Tu próxima idea puede estar escondida en una tontería.',
+  'No necesitas claridad total para comenzar.',
+  '¿Y si hoy pruebas algo completamente distinto?',
+  'Lo imperfecto también puede convertirse en algo grande.'
 ];
 
-const lamp=document.getElementById("lamp");
-const canvas=document.getElementById("lava");
+const jar=document.getElementById("jar");
+const canvas=document.getElementById("slime");
 const ctx=canvas.getContext("2d");
 const idea=document.getElementById("idea");
 
 let dpr=Math.min(window.devicePixelRatio||1,2);
 let width=0;
 let height=0;
+let last=performance.now();
 let phraseIndex=0;
-let mouse={x:0,y:0,active:false};
-let lastTime=performance.now();
+let pressed=false;
+let pointer={x:0,y:0,active:false};
+let clickBurst=0;
+let lastClick=0;
 
-const blobCount=14;
-const blobs=[];
+const pointCount=46;
+let surface=[];
+let bubbles=[];
+let particles=[];
 
 function resize(){
-  const rect=lamp.getBoundingClientRect();
+  const rect=jar.getBoundingClientRect();
   width=rect.width;
   height=rect.height;
   canvas.width=Math.round(width*dpr);
@@ -221,171 +218,52 @@ function resize(){
   canvas.style.width=width+"px";
   canvas.style.height=height+"px";
   ctx.setTransform(dpr,0,0,dpr,0,0);
+  initSurface();
 }
 
-function random(min,max){
-  return Math.random()*(max-min)+min;
-}
-
-function makeBlob(i){
-  const radius=random(12,28);
-  return {
-    x:random(radius,width-radius),
-    y:random(radius,height-radius),
-    vx:random(-0.32,0.32),
-    vy:random(-0.28,0.28),
-    radius,
-    baseRadius:radius,
-    phase:random(0,Math.PI*2),
-    breathSpeed:random(.0012,.0024),
-    hueShift:random(-10,10),
-    seed:i*13.37
-  };
-}
-
-function initBlobs(){
-  blobs.length=0;
-  for(let i=0;i<blobCount;i++) blobs.push(makeBlob(i));
-}
-
-function softBounds(b){
-  const pad=b.radius+8;
-  const force=.0018;
-
-  if(b.x<pad) b.vx+=(pad-b.x)*force;
-  if(b.x>width-pad) b.vx-=(b.x-(width-pad))*force;
-  if(b.y<pad) b.vy+=(pad-b.y)*force;
-  if(b.y>height-pad) b.vy-=(b.y-(height-pad))*force;
-}
-
-function interactBlobs(){
-  for(let i=0;i<blobs.length;i++){
-    for(let j=i+1;j<blobs.length;j++){
-      const a=blobs[i];
-      const b=blobs[j];
-      const dx=b.x-a.x;
-      const dy=b.y-a.y;
-      const dist=Math.hypot(dx,dy)||1;
-      const minDist=(a.radius+b.radius)*.72;
-
-      if(dist<minDist){
-        const push=(minDist-dist)*.00075;
-        const nx=dx/dist;
-        const ny=dy/dist;
-        a.vx-=nx*push;
-        a.vy-=ny*push;
-        b.vx+=nx*push;
-        b.vy+=ny*push;
-      }else if(dist<110){
-        const pull=(110-dist)*.0000024;
-        const nx=dx/dist;
-        const ny=dy/dist;
-        a.vx+=nx*pull;
-        a.vy+=ny*pull;
-        b.vx-=nx*pull;
-        b.vy-=ny*pull;
-      }
-    }
+function initSurface(){
+  surface=[];
+  const base=height*.58;
+  for(let i=0;i<pointCount;i++){
+    surface.push({
+      x:(i/(pointCount-1))*width,
+      y:base,
+      vy:0,
+      target:base
+    });
   }
 }
 
-function update(dt,time){
-  interactBlobs();
+function spawnBubble(big=false){
+  bubbles.push({
+    x:Math.random()*width*.78+width*.11,
+    y:height+10,
+    r:big?Math.random()*7+9:Math.random()*3.5+2.5,
+    vy:big?-(Math.random()*.18+.18):-(Math.random()*.28+.16),
+    wobble:Math.random()*Math.PI*2,
+    life:1,
+    big
+  });
+}
 
-  for(const b of blobs){
-    const flowX=Math.sin(time*.00035+b.seed)*.00055;
-    const flowY=Math.cos(time*.00028+b.seed*1.7)*.00045;
+function spawnParticle(){
+  particles.push({
+    x:Math.random()*width,
+    y:height*.62+Math.random()*height*.32,
+    r:Math.random()*1.3+.4,
+    a:Math.random()*.35+.12,
+    vy:-(Math.random()*.05+.015)
+  });
+}
 
-    b.vx+=flowX*dt;
-    b.vy+=flowY*dt;
-
-    if(mouse.active){
-      const dx=b.x-mouse.x;
-      const dy=b.y-mouse.y;
-      const dist=Math.hypot(dx,dy)||1;
-      if(dist<90){
-        const strength=(90-dist)/90;
-        b.vx+=(dx/dist)*strength*.012*dt;
-        b.vy+=(dy/dist)*strength*.012*dt;
-      }
+function disturb(x,force=-14,radius=52){
+  for(const p of surface){
+    const d=Math.abs(p.x-x);
+    if(d<radius){
+      const falloff=1-d/radius;
+      p.vy+=force*falloff;
     }
-
-    softBounds(b);
-
-    const speed=Math.hypot(b.vx,b.vy);
-    const maxSpeed=.58;
-    if(speed>maxSpeed){
-      b.vx=(b.vx/speed)*maxSpeed;
-      b.vy=(b.vy/speed)*maxSpeed;
-    }
-
-    b.vx*=Math.pow(.995,dt);
-    b.vy*=Math.pow(.995,dt);
-
-    b.x+=b.vx*dt;
-    b.y+=b.vy*dt;
-
-    const breathe=Math.sin(time*b.breathSpeed+b.phase);
-    b.radius=b.baseRadius*(1+breathe*.12);
   }
-}
-
-function drawBlob(b){
-  const stretchX=1+Math.min(Math.abs(b.vx)*.55,.22);
-  const stretchY=1+Math.min(Math.abs(b.vy)*.55,.22);
-
-  ctx.save();
-  ctx.translate(b.x,b.y);
-  ctx.rotate(Math.atan2(b.vy,b.vx)*.12);
-  ctx.scale(stretchX,stretchY);
-
-  const grad=ctx.createRadialGradient(
-    -b.radius*.28,-b.radius*.32,b.radius*.1,
-    0,0,b.radius*1.12
-  );
-  grad.addColorStop(0,"rgba(255,255,255,.92)");
-  grad.addColorStop(.18,"rgba(221,185,255,.98)");
-  grad.addColorStop(.52,"rgba(168,85,247,.96)");
-  grad.addColorStop(1,"rgba(108,43,205,.96)");
-
-  ctx.fillStyle=grad;
-  ctx.shadowColor="rgba(168,85,247,.48)";
-  ctx.shadowBlur=18;
-  ctx.beginPath();
-  ctx.arc(0,0,b.radius,0,Math.PI*2);
-  ctx.fill();
-
-  ctx.restore();
-}
-
-function draw(){
-  ctx.clearRect(0,0,width,height);
-
-  ctx.save();
-  ctx.globalCompositeOperation="screen";
-  for(const b of blobs) drawBlob(b);
-  ctx.restore();
-
-  ctx.save();
-  ctx.globalCompositeOperation="source-over";
-  ctx.filter="blur(7px)";
-  ctx.globalAlpha=.78;
-  for(const b of blobs) drawBlob(b);
-  ctx.restore();
-
-  ctx.save();
-  ctx.globalCompositeOperation="screen";
-  ctx.globalAlpha=.55;
-  for(const b of blobs) drawBlob(b);
-  ctx.restore();
-}
-
-function loop(time){
-  const dt=Math.min((time-lastTime)/16.6667,2.2);
-  lastTime=time;
-  update(dt,time);
-  draw();
-  requestAnimationFrame(loop);
 }
 
 function nextPhrase(){
@@ -394,7 +272,7 @@ function nextPhrase(){
   setTimeout(()=>{
     idea.innerHTML=phrases[phraseIndex];
     idea.classList.remove("fade");
-  },150);
+  },140);
 }
 
 function rippleAt(x,y){
@@ -402,55 +280,235 @@ function rippleAt(x,y){
   r.className="ripple";
   r.style.left=x+"px";
   r.style.top=y+"px";
-  lamp.appendChild(r);
-  setTimeout(()=>r.remove(),820);
+  jar.appendChild(r);
+  setTimeout(()=>r.remove(),880);
 }
 
-function pulseAt(x,y){
-  for(const b of blobs){
-    const dx=b.x-x;
-    const dy=b.y-y;
-    const dist=Math.hypot(dx,dy)||1;
-    const force=Math.max(0,1-dist/180);
-    b.vx+=(dx/dist)*force*1.15;
-    b.vy+=(dy/dist)*force*1.15;
+function surfaceYAt(x){
+  const t=(x/width)*(pointCount-1);
+  const i=Math.floor(t);
+  const f=t-i;
+  const a=surface[Math.max(0,Math.min(pointCount-1,i))];
+  const b=surface[Math.max(0,Math.min(pointCount-1,i+1))];
+  return a.y*(1-f)+b.y*f;
+}
+
+function update(dt,time){
+  const spring=.018;
+  const damping=.985;
+  const spread=.14;
+
+  for(let i=0;i<surface.length;i++){
+    const p=surface[i];
+    p.target=height*.58 + Math.sin(time*.0011+i*.28)*1.6;
+    const accel=(p.target-p.y)*spring;
+    p.vy+=accel*dt;
+    p.vy*=Math.pow(damping,dt);
   }
+
+  for(let pass=0;pass<3;pass++){
+    for(let i=0;i<surface.length;i++){
+      if(i>0){
+        const diff=surface[i].y-surface[i-1].y;
+        surface[i-1].vy+=diff*spread*.08*dt;
+      }
+      if(i<surface.length-1){
+        const diff=surface[i].y-surface[i+1].y;
+        surface[i+1].vy+=diff*spread*.08*dt;
+      }
+    }
+  }
+
+  if(pressed && pointer.active){
+    const idx=Math.round((pointer.x/width)*(pointCount-1));
+    for(let i=0;i<surface.length;i++){
+      const d=Math.abs(i-idx);
+      if(d<7){
+        const pull=(1-d/7);
+        const desired=Math.min(height*.78,pointer.y);
+        surface[i].vy+=(desired-surface[i].y)*.0035*pull*dt;
+      }
+    }
+  }
+
+  for(const p of surface) p.y+=p.vy*dt;
+
+  if(Math.random()<.018*dt) spawnBubble(false);
+  if(Math.random()<.0016*dt) spawnBubble(true);
+  if(Math.random()<.05*dt) spawnParticle();
+
+  for(const b of bubbles){
+    b.y+=b.vy*dt;
+    b.x+=Math.sin(time*.002+b.wobble)*.08*dt;
+    const sy=surfaceYAt(Math.max(0,Math.min(width,b.x)));
+    if(b.y-b.r<sy){
+      b.life-=.045*dt;
+      b.r+=.12*dt;
+    }
+  }
+  bubbles=bubbles.filter(b=>b.life>0 && b.y>-20);
+
+  for(const p of particles){
+    p.y+=p.vy*dt;
+    if(p.y<height*.6) p.y=height*.95;
+  }
+  particles=particles.slice(-80);
+
+  if(clickBurst>4 && time-lastClick<900){
+    for(const p of surface) p.vy+=Math.sin(p.x*.08+time*.01)*.018*dt;
+  }
+  if(time-lastClick>900) clickBurst=0;
 }
 
-function activate(clientX=null,clientY=null){
-  const rect=lamp.getBoundingClientRect();
-  const x=clientX===null ? rect.width/2 : clientX-rect.left;
-  const y=clientY===null ? rect.height/2 : clientY-rect.top;
-  rippleAt(x,y);
-  pulseAt(x,y);
+function drawSlimePath(){
+  ctx.beginPath();
+  ctx.moveTo(0,height);
+  ctx.lineTo(0,surface[0].y);
+
+  for(let i=0;i<surface.length-1;i++){
+    const p=surface[i];
+    const n=surface[i+1];
+    const mx=(p.x+n.x)/2;
+    const my=(p.y+n.y)/2;
+    ctx.quadraticCurveTo(p.x,p.y,mx,my);
+  }
+
+  const lastP=surface[surface.length-1];
+  ctx.lineTo(lastP.x,lastP.y);
+  ctx.lineTo(width,height);
+  ctx.closePath();
+}
+
+function draw(time){
+  ctx.clearRect(0,0,width,height);
+
+  const grad=ctx.createLinearGradient(0,height*.45,0,height);
+  grad.addColorStop(0,"rgba(216,180,254,.96)");
+  grad.addColorStop(.32,"rgba(168,85,247,.94)");
+  grad.addColorStop(1,"rgba(84,28,156,.98)");
+
+  ctx.save();
+  ctx.shadowColor="rgba(168,85,247,.45)";
+  ctx.shadowBlur=26;
+  drawSlimePath();
+  ctx.fillStyle=grad;
+  ctx.fill();
+  ctx.restore();
+
+  ctx.save();
+  drawSlimePath();
+  ctx.clip();
+
+  const shine=ctx.createLinearGradient(0,0,width,0);
+  shine.addColorStop(0,"rgba(255,255,255,.02)");
+  shine.addColorStop(.22,"rgba(255,255,255,.10)");
+  shine.addColorStop(.38,"rgba(255,255,255,.025)");
+  shine.addColorStop(1,"rgba(255,255,255,0)");
+  ctx.fillStyle=shine;
+  ctx.fillRect(0,height*.52,width,height*.48);
+
+  for(const p of particles){
+    ctx.globalAlpha=p.a;
+    ctx.fillStyle="#f2ddff";
+    ctx.beginPath();
+    ctx.arc(p.x,p.y,p.r,0,Math.PI*2);
+    ctx.fill();
+  }
+  ctx.globalAlpha=1;
+
+  for(const b of bubbles){
+    const bg=ctx.createRadialGradient(
+      b.x-b.r*.35,b.y-b.r*.35,b.r*.15,
+      b.x,b.y,b.r
+    );
+    bg.addColorStop(0,"rgba(255,255,255,.62)");
+    bg.addColorStop(.25,"rgba(235,210,255,.24)");
+    bg.addColorStop(1,"rgba(74,21,130,.08)");
+    ctx.fillStyle=bg;
+    ctx.strokeStyle=`rgba(245,225,255,${.24*b.life})`;
+    ctx.lineWidth=1;
+    ctx.beginPath();
+    ctx.arc(b.x,b.y,b.r,0,Math.PI*2);
+    ctx.fill();
+    ctx.stroke();
+  }
+  ctx.restore();
+
+  ctx.save();
+  ctx.strokeStyle="rgba(255,255,255,.23)";
+  ctx.lineWidth=1.4;
+  ctx.beginPath();
+  for(let i=0;i<surface.length;i++){
+    const p=surface[i];
+    if(i===0) ctx.moveTo(p.x,p.y-1);
+    else{
+      const prev=surface[i-1];
+      const mx=(prev.x+p.x)/2;
+      const my=(prev.y+p.y)/2;
+      ctx.quadraticCurveTo(prev.x,prev.y-1,mx,my-1);
+    }
+  }
+  ctx.stroke();
+  ctx.restore();
+}
+
+function loop(time){
+  const dt=Math.min((time-last)/16.6667,2);
+  last=time;
+  update(dt,time);
+  draw(time);
+  requestAnimationFrame(loop);
+}
+
+function localPos(e){
+  const rect=jar.getBoundingClientRect();
+  return {x:e.clientX-rect.left,y:e.clientY-rect.top};
+}
+
+jar.addEventListener("pointerdown",e=>{
+  jar.setPointerCapture(e.pointerId);
+  const p=localPos(e);
+  pointer={...p,active:true};
+  pressed=true;
+  disturb(p.x,-16,58);
+  rippleAt(p.x,p.y);
   nextPhrase();
-}
-
-lamp.addEventListener("mousemove",e=>{
-  const rect=lamp.getBoundingClientRect();
-  mouse.x=e.clientX-rect.left;
-  mouse.y=e.clientY-rect.top;
-  mouse.active=true;
+  clickBurst++;
+  lastClick=performance.now();
 });
-lamp.addEventListener("mouseleave",()=>mouse.active=false);
-lamp.addEventListener("click",e=>activate(e.clientX,e.clientY));
-lamp.addEventListener("keydown",e=>{
+
+jar.addEventListener("pointermove",e=>{
+  if(!pressed)return;
+  pointer={...localPos(e),active:true};
+  disturb(pointer.x,-2.4,34);
+});
+
+jar.addEventListener("pointerup",e=>{
+  pressed=false;
+  pointer.active=false;
+  try{jar.releasePointerCapture(e.pointerId)}catch{}
+});
+
+jar.addEventListener("pointercancel",()=>{
+  pressed=false;
+  pointer.active=false;
+});
+
+jar.addEventListener("keydown",e=>{
   if(e.key==="Enter"||e.key===" "){
     e.preventDefault();
-    activate();
+    const x=width/2;
+    disturb(x,-18,64);
+    rippleAt(x,height*.55);
+    nextPhrase();
   }
 });
 
-window.addEventListener("resize",()=>{
-  resize();
-  for(const b of blobs){
-    b.x=Math.min(Math.max(b.radius,b.x),width-b.radius);
-    b.y=Math.min(Math.max(b.radius,b.y),height-b.radius);
-  }
-});
+window.addEventListener("resize",resize);
 
 resize();
-initBlobs();
+for(let i=0;i<7;i++) spawnBubble(false);
+for(let i=0;i<28;i++) spawnParticle();
 requestAnimationFrame(loop);
 </script>
 </body>
