@@ -1,1 +1,650 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Cómo usar Proyectos</title>
 
+  <style>
+    :root{
+      --bg:#0b0a0f;
+      --panel:#15131c;
+      --panel-2:#1a1624;
+      --text:#f6f3fb;
+      --muted:#aaa2b8;
+      --purple:#a855f7;
+      --purple-soft:#d8b4fe;
+      --border:rgba(255,255,255,.09);
+      --success:#d7c1ff;
+    }
+
+    *{box-sizing:border-box}
+
+    html,body{
+      margin:0;
+      min-height:100%;
+      font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+      background:transparent;
+      color:var(--text);
+    }
+
+    body{padding:10px}
+
+    .widget{
+      width:min(100%,900px);
+      margin:auto;
+      padding:18px;
+      border:1px solid var(--border);
+      border-radius:24px;
+      background:
+        radial-gradient(circle at 88% 8%, rgba(168,85,247,.20), transparent 30%),
+        radial-gradient(circle at 10% 92%, rgba(124,58,237,.13), transparent 28%),
+        linear-gradient(145deg,var(--panel),var(--bg));
+      box-shadow:0 18px 50px rgba(0,0,0,.30);
+      overflow:hidden;
+    }
+
+    .eyebrow{
+      font-size:12px;
+      font-weight:800;
+      letter-spacing:.09em;
+      text-transform:uppercase;
+      color:var(--purple-soft);
+      margin-bottom:8px;
+    }
+
+    h1{
+      margin:0;
+      font-size:clamp(28px,5vw,44px);
+      line-height:1.05;
+      letter-spacing:-.04em;
+    }
+
+    .intro{
+      margin-top:10px;
+      color:var(--muted);
+      font-size:15px;
+      line-height:1.5;
+    }
+
+    .progress-top{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:14px;
+      margin-top:18px;
+      flex-wrap:wrap;
+    }
+
+    .progress-label{
+      font-size:13px;
+      color:var(--muted);
+    }
+
+    .progress-label strong{
+      color:var(--purple-soft);
+    }
+
+    .progress-bar{
+      flex:1 1 240px;
+      height:9px;
+      border-radius:999px;
+      background:rgba(255,255,255,.07);
+      overflow:hidden;
+    }
+
+    .progress-fill{
+      height:100%;
+      width:0;
+      border-radius:inherit;
+      background:linear-gradient(90deg,#7c3aed,#a855f7,#d8b4fe);
+      transition:width .35s ease;
+    }
+
+    .steps{
+      display:grid;
+      grid-template-columns:repeat(4,1fr);
+      gap:10px;
+      margin-top:18px;
+    }
+
+    .step{
+      position:relative;
+      min-height:220px;
+      padding:16px;
+      border:1px solid var(--border);
+      border-radius:18px;
+      background:rgba(255,255,255,.035);
+      overflow:hidden;
+      cursor:grab;
+      transition:
+        transform .2s ease,
+        opacity .2s ease,
+        border-color .2s ease,
+        background .2s ease;
+      user-select:none;
+      display:flex;
+      flex-direction:column;
+    }
+
+    .step:active{cursor:grabbing}
+
+    .step.dragging{
+      opacity:.45;
+      transform:scale(.98);
+    }
+
+    .step.completed{
+      background:rgba(168,85,247,.08);
+      border-color:rgba(216,180,254,.25);
+    }
+
+    .step.completed h2,
+    .step.completed p,
+    .step.completed .example{
+      opacity:.58;
+    }
+
+    .step.completed h2{
+      text-decoration:line-through;
+      text-decoration-thickness:1px;
+    }
+
+    .step::after{
+      content:"";
+      position:absolute;
+      width:82px;
+      height:82px;
+      border-radius:50%;
+      right:-28px;
+      top:-28px;
+      background:rgba(168,85,247,.10);
+      pointer-events:none;
+    }
+
+    .step-head{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      margin-bottom:14px;
+      position:relative;
+      z-index:1;
+    }
+
+    .number{
+      width:34px;
+      height:34px;
+      border-radius:50%;
+      display:grid;
+      place-items:center;
+      font-weight:850;
+      background:rgba(168,85,247,.16);
+      color:var(--purple-soft);
+      border:1px solid rgba(216,180,254,.16);
+      flex:0 0 auto;
+    }
+
+    .drag-handle{
+      color:var(--muted);
+      font-size:18px;
+      line-height:1;
+      letter-spacing:-2px;
+      opacity:.8;
+    }
+
+    .step h2{
+      margin:0;
+      font-size:17px;
+      line-height:1.25;
+      letter-spacing:-.02em;
+      transition:opacity .2s ease;
+    }
+
+    .step p{
+      margin:9px 0 0;
+      color:var(--muted);
+      font-size:13px;
+      line-height:1.45;
+      transition:opacity .2s ease;
+    }
+
+    .example{
+      margin-top:10px;
+      padding:10px;
+      border-radius:12px;
+      background:rgba(255,255,255,.035);
+      font-size:12px;
+      line-height:1.5;
+      transition:opacity .2s ease;
+    }
+
+    .bad{color:#c6becf}
+    .good{color:var(--success)}
+
+    .check-wrap{
+      margin-top:auto;
+      padding-top:16px;
+      display:flex;
+      align-items:center;
+      gap:9px;
+      position:relative;
+      z-index:2;
+    }
+
+    .check-button{
+      width:100%;
+      border:1px solid rgba(216,180,254,.18);
+      border-radius:13px;
+      padding:10px 12px;
+      background:rgba(255,255,255,.035);
+      color:var(--text);
+      font-size:13px;
+      font-weight:800;
+      cursor:pointer;
+      transition:
+        transform .18s ease,
+        background .18s ease,
+        border-color .18s ease;
+    }
+
+    .check-button:hover{
+      transform:translateY(-1px);
+      background:rgba(168,85,247,.10);
+    }
+
+    .check-button.done{
+      background:rgba(168,85,247,.16);
+      border-color:rgba(216,180,254,.28);
+      color:var(--purple-soft);
+    }
+
+    .golden-rule{
+      margin-top:12px;
+      padding:16px;
+      border:1px solid rgba(216,180,254,.16);
+      border-radius:18px;
+      background:
+        linear-gradient(145deg,rgba(168,85,247,.12),rgba(255,255,255,.03));
+    }
+
+    .golden-rule strong{
+      display:block;
+      color:var(--purple-soft);
+      font-size:13px;
+      letter-spacing:.04em;
+      text-transform:uppercase;
+      margin-bottom:7px;
+    }
+
+    .golden-rule span{
+      font-size:15px;
+      line-height:1.5;
+    }
+
+    .actions{
+      display:flex;
+      align-items:center;
+      gap:12px;
+      margin-top:14px;
+      flex-wrap:wrap;
+    }
+
+    .main-button,
+    .reset-button{
+      appearance:none;
+      border:none;
+      cursor:pointer;
+      padding:12px 16px;
+      border-radius:14px;
+      font-weight:800;
+      font-size:14px;
+      transition:transform .2s ease, opacity .2s ease;
+    }
+
+    .main-button{
+      background:linear-gradient(135deg,#7c3aed,#a855f7);
+      color:white;
+      box-shadow:0 10px 24px rgba(124,58,237,.22);
+    }
+
+    .reset-button{
+      background:rgba(255,255,255,.045);
+      color:var(--muted);
+      border:1px solid var(--border);
+    }
+
+    .main-button:hover,
+    .reset-button:hover{
+      transform:translateY(-1px);
+    }
+
+    .success-message{
+      min-height:20px;
+      color:var(--purple-soft);
+      font-size:14px;
+      font-weight:700;
+      opacity:0;
+      transform:translateY(4px);
+      transition:opacity .25s ease, transform .25s ease;
+    }
+
+    .success-message.visible{
+      opacity:1;
+      transform:translateY(0);
+    }
+
+    @media(max-width:760px){
+      .steps{grid-template-columns:1fr 1fr}
+    }
+
+    @media(max-width:480px){
+      body{padding:6px}
+
+      .widget{
+        padding:14px;
+        border-radius:18px;
+      }
+
+      .steps{grid-template-columns:1fr}
+
+      .step{min-height:auto}
+
+      .actions{
+        align-items:flex-start;
+        flex-direction:column;
+      }
+
+      .main-button,
+      .reset-button{
+        width:100%;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <main class="widget">
+    <div class="eyebrow">🎬 Proyectos</div>
+    <h1>Organiza tu trabajo en 4 pasos</h1>
+
+    <div class="intro">
+      Puedes mover las tarjetas y marcar cada paso cuando lo completes.
+    </div>
+
+    <div class="progress-top">
+      <div class="progress-label">
+        <strong id="completedCount">0</strong> de 4 pasos completados
+      </div>
+      <div class="progress-bar">
+        <div class="progress-fill" id="progressFill"></div>
+      </div>
+    </div>
+
+    <section class="steps" id="stepsContainer">
+      <article class="step" draggable="true" data-id="crear">
+        <div class="step-head">
+          <div class="number">1</div>
+          <div class="drag-handle" title="Arrastrar">⋮⋮</div>
+        </div>
+
+        <h2>➕ Crea el proyecto</h2>
+        <p>Escribe el nombre, el cliente y la fecha de entrega.</p>
+
+        <div class="check-wrap">
+          <button class="check-button" type="button">○ Marcar como listo</button>
+        </div>
+      </article>
+
+      <article class="step" draggable="true" data-id="accion">
+        <div class="step-head">
+          <div class="number">2</div>
+          <div class="drag-handle" title="Arrastrar">⋮⋮</div>
+        </div>
+
+        <h2>🎯 Escribe qué harás ahora</h2>
+        <p>La próxima acción debe ser concreta.</p>
+
+        <div class="example">
+          <div class="bad">❌ Editar video</div>
+          <div class="good">✅ Seleccionar clips</div>
+          <div class="good">✅ Corregir color</div>
+          <div class="good">✅ Exportar versión final</div>
+        </div>
+
+        <div class="check-wrap">
+          <button class="check-button" type="button">○ Marcar como listo</button>
+        </div>
+      </article>
+
+      <article class="step" draggable="true" data-id="trabajar">
+        <div class="step-head">
+          <div class="number">3</div>
+          <div class="drag-handle" title="Arrastrar">⋮⋮</div>
+        </div>
+
+        <h2>💼 Trabaja en esa acción</h2>
+        <p>Concéntrate solo en eso. Cuando termines, escribe la siguiente acción.</p>
+
+        <div class="check-wrap">
+          <button class="check-button" type="button">○ Marcar como listo</button>
+        </div>
+      </article>
+
+      <article class="step" draggable="true" data-id="estado">
+        <div class="step-head">
+          <div class="number">4</div>
+          <div class="drag-handle" title="Arrastrar">⋮⋮</div>
+        </div>
+
+        <h2>🔄 Cambia el estado</h2>
+        <p>Por iniciar → Editando → Revisión → Finalizado.</p>
+
+        <div class="check-wrap">
+          <button class="check-button" type="button">○ Marcar como listo</button>
+        </div>
+      </article>
+    </section>
+
+    <section class="golden-rule">
+      <strong>💜 Regla de oro</strong>
+      <span>Antes de cerrar Notion, actualiza el estado y deja escrita la siguiente acción.</span>
+    </section>
+
+    <div class="actions">
+      <button class="main-button" id="understoodButton">▶ Ya entendí</button>
+      <button class="reset-button" id="resetButton">↺ Reiniciar pasos</button>
+
+      <div class="success-message" id="successMessage">
+        ✔ Perfecto. Ya puedes empezar con tu proyecto.
+      </div>
+    </div>
+  </main>
+
+  <script>
+    const STORAGE_CHECKS = "proyectos_widget_checks_v1";
+    const STORAGE_ORDER = "proyectos_widget_order_v1";
+
+    const container = document.getElementById("stepsContainer");
+    const progressFill = document.getElementById("progressFill");
+    const completedCount = document.getElementById("completedCount");
+    const successMessage = document.getElementById("successMessage");
+    const understoodButton = document.getElementById("understoodButton");
+    const resetButton = document.getElementById("resetButton");
+
+    let draggedCard = null;
+
+    function readChecks(){
+      try{
+        return JSON.parse(localStorage.getItem(STORAGE_CHECKS) || "{}");
+      }catch{
+        return {};
+      }
+    }
+
+    function saveChecks(checks){
+      localStorage.setItem(STORAGE_CHECKS, JSON.stringify(checks));
+    }
+
+    function readOrder(){
+      try{
+        return JSON.parse(localStorage.getItem(STORAGE_ORDER) || "[]");
+      }catch{
+        return [];
+      }
+    }
+
+    function saveOrder(){
+      const order = [...container.querySelectorAll(".step")]
+        .map(card => card.dataset.id);
+
+      localStorage.setItem(STORAGE_ORDER, JSON.stringify(order));
+    }
+
+    function applySavedOrder(){
+      const order = readOrder();
+
+      if(!order.length) return;
+
+      order.forEach(id => {
+        const card = container.querySelector(`[data-id="${id}"]`);
+        if(card) container.appendChild(card);
+      });
+    }
+
+    function updateCard(card, completed){
+      const button = card.querySelector(".check-button");
+
+      card.classList.toggle("completed", completed);
+      button.classList.toggle("done", completed);
+      button.textContent = completed
+        ? "✓ Paso completado"
+        : "○ Marcar como listo";
+    }
+
+    function updateProgress(){
+      const cards = [...container.querySelectorAll(".step")];
+      const completed = cards.filter(card =>
+        card.classList.contains("completed")
+      ).length;
+
+      const percent = Math.round((completed / cards.length) * 100);
+
+      completedCount.textContent = completed;
+      progressFill.style.width = percent + "%";
+
+      if(completed === cards.length){
+        successMessage.textContent =
+          "✔ Todo listo. Ya puedes empezar a trabajar.";
+        successMessage.classList.add("visible");
+        understoodButton.textContent = "✔ Completado";
+      }else{
+        successMessage.classList.remove("visible");
+        understoodButton.textContent = "▶ Ya entendí";
+      }
+    }
+
+    function restoreChecks(){
+      const checks = readChecks();
+
+      container.querySelectorAll(".step").forEach(card => {
+        updateCard(card, Boolean(checks[card.dataset.id]));
+      });
+
+      updateProgress();
+    }
+
+    container.addEventListener("click", event => {
+      const button = event.target.closest(".check-button");
+      if(!button) return;
+
+      const card = button.closest(".step");
+      const checks = readChecks();
+      const nextValue = !card.classList.contains("completed");
+
+      checks[card.dataset.id] = nextValue;
+      saveChecks(checks);
+      updateCard(card, nextValue);
+      updateProgress();
+    });
+
+    container.addEventListener("dragstart", event => {
+      const card = event.target.closest(".step");
+      if(!card) return;
+
+      draggedCard = card;
+      card.classList.add("dragging");
+
+      event.dataTransfer.effectAllowed = "move";
+      event.dataTransfer.setData("text/plain", card.dataset.id);
+    });
+
+    container.addEventListener("dragend", () => {
+      if(draggedCard){
+        draggedCard.classList.remove("dragging");
+      }
+
+      draggedCard = null;
+      saveOrder();
+    });
+
+    container.addEventListener("dragover", event => {
+      event.preventDefault();
+
+      if(!draggedCard) return;
+
+      const afterElement = getDragAfterElement(container, event.clientX, event.clientY);
+
+      if(afterElement == null){
+        container.appendChild(draggedCard);
+      }else{
+        container.insertBefore(draggedCard, afterElement);
+      }
+    });
+
+    function getDragAfterElement(container, x, y){
+      const cards = [...container.querySelectorAll(".step:not(.dragging)")];
+
+      return cards.reduce((closest, card) => {
+        const box = card.getBoundingClientRect();
+        const centerX = box.left + box.width / 2;
+        const centerY = box.top + box.height / 2;
+        const distance = Math.hypot(x - centerX, y - centerY);
+
+        if(distance < closest.distance){
+          return {distance, element:card};
+        }
+
+        return closest;
+      }, {distance:Number.POSITIVE_INFINITY, element:null}).element;
+    }
+
+    understoodButton.addEventListener("click", () => {
+      successMessage.textContent =
+        "✔ Perfecto. Ahora baja y empieza con un proyecto.";
+      successMessage.classList.add("visible");
+
+      setTimeout(() => {
+        window.scrollTo({
+          top:document.body.scrollHeight,
+          behavior:"smooth"
+        });
+      }, 250);
+    });
+
+    resetButton.addEventListener("click", () => {
+      localStorage.removeItem(STORAGE_CHECKS);
+
+      container.querySelectorAll(".step").forEach(card => {
+        updateCard(card, false);
+      });
+
+      successMessage.classList.remove("visible");
+      updateProgress();
+    });
+
+    applySavedOrder();
+    restoreChecks();
+  </script>
+</body>
+</html>
