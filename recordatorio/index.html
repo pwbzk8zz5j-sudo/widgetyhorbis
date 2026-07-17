@@ -1,0 +1,426 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Productividad</title>
+  <style>
+    :root{
+      --card:rgba(255,255,255,.065);
+      --card-hover:rgba(255,255,255,.09);
+      --border:rgba(220,205,255,.15);
+      --text:#f8f5ff;
+      --muted:#beb4d5;
+      --purple-1:#8f6cff;
+      --purple-2:#bda6ff;
+      --purple-3:#6e4de6;
+      --shadow:0 18px 45px rgba(20,10,45,.34);
+    }
+    *{box-sizing:border-box}
+    html,body{
+      margin:0;
+      min-height:100%;
+      font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif
+    }
+    body{
+      color:var(--text);
+      background:
+        radial-gradient(circle at 16% 14%, rgba(143,108,255,.27), transparent 34%),
+        radial-gradient(circle at 84% 82%, rgba(189,166,255,.17), transparent 32%),
+        linear-gradient(145deg,#120d20,#171026 58%,#100b1b);
+      padding:18px;
+    }
+    .shell{
+      width:min(100%,980px);
+      margin:auto;
+      border:1px solid var(--border);
+      border-radius:24px;
+      padding:16px;
+      background:rgba(18,13,32,.74);
+      box-shadow:var(--shadow);
+      backdrop-filter:blur(18px);
+      -webkit-backdrop-filter:blur(18px);
+    }
+    .topbar{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:14px;
+      padding:2px 4px 14px;
+    }
+    .greeting{
+      font-size:12px;
+      font-weight:800;
+      letter-spacing:.08em;
+      color:var(--muted);
+      text-transform:uppercase;
+    }
+    .date{
+      font-size:12px;
+      color:var(--muted);
+      text-transform:capitalize;
+    }
+    .grid{
+      display:grid;
+      grid-template-columns:1fr 1.25fr 1.2fr;
+      gap:12px;
+    }
+    .card{
+      position:relative;
+      min-height:190px;
+      border:1px solid var(--border);
+      border-radius:18px;
+      padding:18px;
+      background:var(--card);
+      overflow:hidden;
+      transition:transform .2s ease, background .2s ease;
+    }
+    .card:hover{transform:translateY(-2px);background:var(--card-hover)}
+    .label{
+      display:flex;
+      align-items:center;
+      gap:8px;
+      font-size:12px;
+      font-weight:800;
+      letter-spacing:.08em;
+      color:var(--muted);
+      text-transform:uppercase;
+    }
+    .value{
+      margin-top:16px;
+      font-size:42px;
+      font-weight:850;
+      line-height:1;
+      letter-spacing:-.04em;
+    }
+    .sub{
+      margin-top:8px;
+      color:var(--muted);
+      font-size:14px;
+      line-height:1.45;
+    }
+    .focus{
+      margin-top:18px;
+      font-size:23px;
+      font-weight:760;
+      line-height:1.24;
+      letter-spacing:-.02em;
+      max-width:26ch;
+      transition:opacity .25s ease, transform .25s ease;
+    }
+    .focus.fade{opacity:0;transform:translateY(5px)}
+    .special{
+      margin-top:10px;
+      font-size:12px;
+      color:var(--purple-2);
+      font-weight:700;
+      min-height:15px;
+    }
+    .progress-wrap{margin-top:22px}
+    .progress-head{
+      display:flex;
+      justify-content:space-between;
+      gap:12px;
+      align-items:flex-end;
+    }
+    .percent{
+      font-size:34px;
+      font-weight:850;
+      letter-spacing:-.04em;
+    }
+    .count{
+      font-size:12px;
+      color:var(--muted);
+      padding-bottom:4px;
+    }
+    .bar{
+      margin-top:14px;
+      height:10px;
+      border-radius:999px;
+      background:rgba(255,255,255,.08);
+      overflow:hidden;
+    }
+    .fill{
+      height:100%;
+      width:0;
+      border-radius:inherit;
+      background:linear-gradient(90deg,var(--purple-3),var(--purple-1),var(--purple-2));
+      transition:width .8s cubic-bezier(.2,.8,.2,1);
+      box-shadow:0 0 18px rgba(143,108,255,.45);
+    }
+    .mini{
+      margin-top:12px;
+      font-size:13px;
+      color:var(--muted);
+    }
+    .streak::after,.progress::after,.focus-card::after{
+      content:"";
+      position:absolute;
+      width:120px;height:120px;
+      border-radius:50%;
+      opacity:.18;
+      right:-44px;top:-44px;
+      background:var(--purple-1);
+    }
+    .focus-card::after{background:var(--purple-2)}
+    .progress::after{background:var(--purple-3)}
+    @media (max-width:760px){
+      body{padding:10px}
+      .shell{border-radius:18px;padding:10px}
+      .grid{grid-template-columns:1fr}
+      .card{min-height:170px}
+      .focus{font-size:22px}
+      .topbar{align-items:flex-start;flex-direction:column;gap:4px}
+    }
+  </style>
+</head>
+<body>
+  <main class="shell">
+    <div class="topbar">
+      <div class="greeting" id="greeting"></div>
+      <div class="date" id="date"></div>
+    </div>
+
+    <section class="grid">
+      <article class="card streak">
+        <div class="label">🔥 Racha</div>
+        <div class="value"><span id="streak">0</span> <span style="font-size:.42em;color:var(--muted)">días</span></div>
+        <div class="sub" id="streakMessage"></div>
+      </article>
+
+      <article class="card focus-card">
+        <div class="label">💜 Un recordatorio</div>
+        <div class="special" id="specialLabel"></div>
+        <div class="focus" id="focus"></div>
+        <div class="sub" id="focusSub"></div>
+      </article>
+
+      <article class="card progress">
+        <div class="label">📈 Progreso semanal</div>
+        <div class="progress-wrap">
+          <div class="progress-head">
+            <div class="percent" id="percent">0%</div>
+            <div class="count"><span id="activeDays">0</span> de 7 días activos</div>
+          </div>
+          <div class="bar"><div class="fill" id="fill"></div></div>
+          <div class="mini" id="progressMessage"></div>
+        </div>
+      </article>
+    </section>
+  </main>
+
+  <script>
+    const messages = {
+      morning: {
+        greeting: "Buenos días",
+        sub: "Con calma, pero concentrado.",
+        phrases: [
+          "Amor, empieza nomás. Yo sé que te va a salir bonito.",
+          "Sigue concentrado, amor. Una cosa a la vez.",
+          "Chambea un ratito y después descansas tranquilo.",
+          "Hoy solo necesitas avanzar un poquito.",
+          "Amor, confía más en lo que haces.",
+          "Empieza por lo más fácil y agarra ritmo.",
+          "No pienses tanto en todo. Haz solo lo que sigue.",
+          "Estoy orgullosa de ti. Ahora concéntrate un ratito.",
+          "Hazlo a tu ritmo, pero no lo sueltes.",
+          "Amor, abre el proyecto y empieza. Tú puedes."
+        ]
+      },
+      afternoon: {
+        greeting: "Buenas tardes",
+        sub: "Ya avanzaste. Sigue con lo que toca.",
+        phrases: [
+          "Amor, sigue concentrado. Ya después descansas.",
+          "Vas bien. No te cambies de proyecto ahorita.",
+          "Chambea esta parte y luego te das un respiro.",
+          "No tiene que quedar perfecto de una. Solo sigue.",
+          "Estoy orgullosa de todo el esfuerzo que le metes.",
+          "Amor, termina esto primero y después vemos lo demás.",
+          "Sigue así. Ya falta menos de lo que parece.",
+          "Confío en ti, pero concéntrate pues.",
+          "No te presiones tanto. Solo sigue avanzando.",
+          "Haz una cosa a la vez, amor."
+        ]
+      },
+      night: {
+        greeting: "Buenas noches",
+        sub: "Un último avance y a descansar.",
+        phrases: [
+          "Amor, deja una cosita lista para mañana.",
+          "Guarda el proyecto antes de cerrar, por favor.",
+          "Estoy orgullosa de ti. Ya casi terminas por hoy.",
+          "Chambea un ratito más y después descansa.",
+          "No hace falta acabar todo. Solo déjalo encaminado.",
+          "Amor, termina esta parte y ya puedes cerrar tranquilo.",
+          "Te amo. Ahora guarda todo antes de que pase algo.",
+          "Hoy avanzaste, y eso ya cuenta bastante.",
+          "Sigue concentrado un poquito más. Ya falta poco.",
+          "Descansa cuando termines. Te lo mereces."
+        ]
+      }
+    };
+
+    const specialMessages = [
+      "Solo pasaba a decirte que te amo. Ahora sigue chambeando.",
+      "Estoy muy orgullosa de ti, amor.",
+      "Confía un poquito más en ti. Yo sí confío muchísimo.",
+      "Te amo. Sigue haciendo lo tuyo.",
+      "Por si no te lo dije hoy: estoy orgullosa de ti.",
+      "Gracias por todo el esfuerzo que haces.",
+      "Ya quiero ver cómo queda. Sigue concentrado.",
+      "Estoy de tu lado siempre, amor.",
+      "Tú sigue avanzando. Yo sigo creyendo en ti.",
+      "Te amo mucho. Ahora concéntrate, por favor."
+    ];
+
+    const ACTIVITY_KEY = "productividad_activity_days_v4";
+    const VISITS_KEY = "productividad_visit_count_v1";
+
+    function localDateKey(date = new Date()){
+      const y = date.getFullYear();
+      const m = String(date.getMonth()+1).padStart(2,"0");
+      const d = String(date.getDate()).padStart(2,"0");
+      return `${y}-${m}-${d}`;
+    }
+
+    function parseKey(key){
+      const [y,m,d] = key.split("-").map(Number);
+      return new Date(y,m-1,d);
+    }
+
+    function getActivity(){
+      try{
+        const raw = JSON.parse(localStorage.getItem(ACTIVITY_KEY) || "[]");
+        return Array.from(new Set(raw)).sort();
+      }catch{
+        return [];
+      }
+    }
+
+    function saveActivity(days){
+      localStorage.setItem(ACTIVITY_KEY, JSON.stringify(days));
+    }
+
+    function registerToday(){
+      const days = getActivity();
+      const today = localDateKey();
+      if(!days.includes(today)){
+        days.push(today);
+        days.sort();
+        saveActivity(days);
+      }
+      return days;
+    }
+
+    function registerVisit(){
+      const next = Number(localStorage.getItem(VISITS_KEY) || "0") + 1;
+      localStorage.setItem(VISITS_KEY, String(next));
+      return next;
+    }
+
+    function currentStreak(days){
+      if(!days.length) return 0;
+      const set = new Set(days);
+      let cursor = new Date();
+      let streak = 0;
+      if(!set.has(localDateKey(cursor))) cursor.setDate(cursor.getDate()-1);
+      while(set.has(localDateKey(cursor))){
+        streak++;
+        cursor.setDate(cursor.getDate()-1);
+      }
+      return streak;
+    }
+
+    function startOfWeek(date){
+      const copy = new Date(date.getFullYear(),date.getMonth(),date.getDate());
+      const day = copy.getDay();
+      copy.setDate(copy.getDate() + (day === 0 ? -6 : 1-day));
+      return copy;
+    }
+
+    function activeDaysThisWeek(days){
+      const start = startOfWeek(new Date());
+      const end = new Date(start);
+      end.setDate(start.getDate()+6);
+      return days.map(parseKey).filter(d => d >= start && d <= end).length;
+    }
+
+    function dayOfYear(date){
+      const start = new Date(date.getFullYear(),0,0);
+      return Math.floor((date-start)/86400000);
+    }
+
+    function getPeriod(hour){
+      if(hour < 12) return "morning";
+      if(hour < 19) return "afternoon";
+      return "night";
+    }
+
+    function chooseMessage(now, visitCount){
+      const period = getPeriod(now.getHours());
+      const config = messages[period];
+
+      // Mensaje especial aproximadamente cada 7 aperturas.
+      const isSpecial = visitCount % 7 === 0;
+      if(isSpecial){
+        return {
+          greeting: config.greeting,
+          sub: "Solo para que no se te olvide.",
+          label: "Mensajito especial",
+          text: specialMessages[Math.floor(visitCount / 7) % specialMessages.length]
+        };
+      }
+
+      return {
+        greeting: config.greeting,
+        sub: config.sub,
+        label: "",
+        text: config.phrases[dayOfYear(now) % config.phrases.length]
+      };
+    }
+
+    function render(){
+      const now = new Date();
+      const days = registerToday();
+      const visits = registerVisit();
+      const streak = currentStreak(days);
+      const active = activeDaysThisWeek(days);
+      const pct = Math.round((active/7)*100);
+      const chosen = chooseMessage(now, visits);
+
+      document.getElementById("greeting").textContent = chosen.greeting;
+      document.getElementById("date").textContent =
+        now.toLocaleDateString("es-PE",{weekday:"long",day:"numeric",month:"long"});
+      document.getElementById("specialLabel").textContent = chosen.label;
+      document.getElementById("focusSub").textContent = chosen.sub;
+
+      const focus = document.getElementById("focus");
+      focus.classList.add("fade");
+      setTimeout(() => {
+        focus.textContent = chosen.text;
+        focus.classList.remove("fade");
+      }, 150);
+
+      document.getElementById("streak").textContent = streak;
+      document.getElementById("streakMessage").textContent =
+        streak <= 1 ? "Ya empezaste. Ahora solo sigue." :
+        streak < 4 ? "Vas agarrando ritmo, amor." :
+        streak < 8 ? "Mira cómo sigues avanzando." :
+        streak < 15 ? "Estoy orgullosa de tu constancia." :
+        "Bueno, ya estás imparable.";
+
+      document.getElementById("activeDays").textContent = active;
+      document.getElementById("percent").textContent = pct + "%";
+      document.getElementById("fill").style.width = pct + "%";
+      document.getElementById("progressMessage").textContent =
+        active <= 1 ? "Ya cuenta. Mañana seguimos." :
+        active < 4 ? "La semana va tomando forma." :
+        active < 7 ? "Vas bien, amor. Sigue así." :
+        "Semana completa. Estoy muy orgullosa de ti.";
+    }
+
+    render();
+  </script>
+</body>
+</html>
