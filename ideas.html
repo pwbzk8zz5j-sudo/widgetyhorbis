@@ -1,0 +1,578 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="color-scheme" content="dark">
+  <title>Cajita de ideas — Slime Jar</title>
+
+  <style>
+    :root{
+      --text:#f7f3fb;
+      --muted:#9d92a7;
+      --purple:#a855f7;
+      --purple-2:#7c3aed;
+      --soft:#e0c4ff;
+      --border:rgba(255,255,255,.085);
+    }
+
+    *{box-sizing:border-box}
+
+    html,body{
+      margin:0;
+      width:100%;
+      min-height:100%;
+      background:transparent!important;
+      color:var(--text);
+      font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+    }
+
+    body{
+      display:grid;
+      place-items:center;
+      padding:8px;
+    }
+
+    .widget{
+      position:relative;
+      isolation:isolate;
+      overflow:hidden;
+      width:min(100%,980px);
+      padding:18px 21px;
+      border:1px solid var(--border);
+      border-radius:23px;
+      background:
+        radial-gradient(circle at 92% 8%,rgba(168,85,247,.18),transparent 26%),
+        linear-gradient(145deg,rgba(20,16,27,.88),rgba(7,6,10,.92));
+      box-shadow:
+        0 17px 43px rgba(0,0,0,.31),
+        inset 0 1px 0 rgba(255,255,255,.05);
+      backdrop-filter:blur(22px) saturate(125%);
+      -webkit-backdrop-filter:blur(22px) saturate(125%);
+    }
+
+    .header{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:16px;
+      margin-bottom:14px;
+    }
+
+    .header h1{
+      margin:0;
+      font-size:1.12rem;
+      font-weight:820;
+      letter-spacing:-.03em;
+    }
+
+    .badge{
+      padding:7px 10px;
+      border:1px solid var(--border);
+      border-radius:999px;
+      color:var(--soft);
+      background:rgba(168,85,247,.06);
+      font-size:.52rem;
+      font-weight:820;
+      letter-spacing:.08em;
+      text-transform:uppercase;
+    }
+
+    .content{
+      display:grid;
+      grid-template-columns:280px minmax(0,1fr);
+      gap:27px;
+      align-items:center;
+    }
+
+    .jar{
+      position:relative;
+      width:280px;
+      height:145px;
+      overflow:hidden;
+      border:1px solid rgba(224,196,255,.16);
+      border-radius:23px;
+      cursor:pointer;
+      touch-action:none;
+      background:
+        linear-gradient(90deg,rgba(255,255,255,.045),transparent 12%,transparent 88%,rgba(255,255,255,.03)),
+        linear-gradient(180deg,rgba(255,255,255,.035),rgba(255,255,255,.012));
+      box-shadow:
+        inset 0 0 40px rgba(0,0,0,.26),
+        0 0 28px rgba(168,85,247,.08);
+      isolation:isolate;
+    }
+
+    .jar::before,
+    .jar::after{
+      content:"";
+      position:absolute;
+      left:50%;
+      z-index:8;
+      width:72%;
+      height:8px;
+      border-radius:999px;
+      transform:translateX(-50%);
+      pointer-events:none;
+      background:linear-gradient(90deg,rgba(255,255,255,.04),rgba(224,196,255,.2),rgba(255,255,255,.04));
+    }
+
+    .jar::before{top:8px}
+    .jar::after{bottom:8px}
+
+    #slime{
+      position:absolute;
+      inset:0;
+      width:100%;
+      height:100%;
+      display:block;
+    }
+
+    .glass{
+      position:absolute;
+      inset:0;
+      z-index:7;
+      pointer-events:none;
+      background:
+        linear-gradient(90deg,rgba(255,255,255,.065),transparent 10%,transparent 86%,rgba(255,255,255,.025)),
+        radial-gradient(circle at 26% 18%,rgba(255,255,255,.08),transparent 24%);
+      mix-blend-mode:screen;
+    }
+
+    .ripple{
+      position:absolute;
+      z-index:9;
+      width:20px;
+      height:20px;
+      border:1px solid rgba(224,196,255,.7);
+      border-radius:50%;
+      pointer-events:none;
+      transform:translate(-50%,-50%) scale(.4);
+      animation:ripple .85s ease-out forwards;
+    }
+
+    .copy{min-width:0}
+
+    .idea{
+      color:#f5f0f8;
+      font-size:.92rem;
+      font-weight:710;
+      line-height:1.5;
+      letter-spacing:-.02em;
+      transition:opacity .2s ease,transform .2s ease;
+    }
+
+    .idea strong{color:var(--soft)}
+    .idea.fade{opacity:.15;transform:translateY(4px)}
+
+    .hint{
+      margin-top:10px;
+      color:var(--muted);
+      font-size:.55rem;
+    }
+
+    @keyframes ripple{
+      0%{opacity:.95;transform:translate(-50%,-50%) scale(.4)}
+      100%{opacity:0;transform:translate(-50%,-50%) scale(8)}
+    }
+
+    @media(max-width:680px){
+      .content{grid-template-columns:1fr;gap:15px}
+      .jar{width:100%;height:125px}
+      .badge{display:none}
+      .idea{font-size:.84rem}
+    }
+
+    @media(prefers-reduced-motion:reduce){
+      .ripple{animation:none}
+    }
+  </style>
+</head>
+
+<body>
+  <main class="widget">
+    <div class="header">
+      <h1>Cajita de ideas</h1>
+      <div class="badge">Slime vivo</div>
+    </div>
+
+    <div class="content">
+      <div class="jar" id="jar" role="button" tabindex="0" aria-label="Slime interactivo">
+        <canvas id="slime"></canvas>
+        <div class="glass"></div>
+      </div>
+
+      <div class="copy">
+        <div class="idea" id="idea">
+          Las ideas también necesitan <strong>tiempo para tomar forma.</strong>
+        </div>
+        <div class="hint">
+          Haz clic, arrastra o mantén presionado sobre el slime.
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    const phrases=[
+      'Las ideas también necesitan <strong>tiempo para tomar forma.</strong>',
+      'No la descartes todavía. Déjala moverse un poco.',
+      'Una idea extraña puede ser justo la que faltaba.',
+      'Empieza por algo pequeño. Luego déjalo crecer.',
+      'Tu próxima idea puede estar escondida en una tontería.',
+      'No necesitas claridad total para comenzar.',
+      '¿Y si hoy pruebas algo completamente distinto?',
+      'Lo imperfecto también puede convertirse en algo grande.'
+    ];
+
+    const jar=document.getElementById("jar");
+    const canvas=document.getElementById("slime");
+    const ctx=canvas.getContext("2d",{alpha:true});
+    const idea=document.getElementById("idea");
+
+    let dpr=Math.min(window.devicePixelRatio||1,1.6);
+    let width=0;
+    let height=0;
+    let last=performance.now();
+    let phraseIndex=0;
+    let pressed=false;
+    let pointer={x:0,y:0,active:false};
+    let visible=!document.hidden;
+    let raf=0;
+
+    const pointCount=40;
+    const maxBubbles=34;
+    const maxParticles=55;
+    let surface=[];
+    let bubbles=[];
+    let particles=[];
+
+    function resize(){
+      const rect=jar.getBoundingClientRect();
+      width=Math.max(1,rect.width);
+      height=Math.max(1,rect.height);
+      canvas.width=Math.round(width*dpr);
+      canvas.height=Math.round(height*dpr);
+      canvas.style.width=width+"px";
+      canvas.style.height=height+"px";
+      ctx.setTransform(dpr,0,0,dpr,0,0);
+      initSurface();
+    }
+
+    function initSurface(){
+      surface=[];
+      const base=height*.58;
+
+      for(let i=0;i<pointCount;i++){
+        surface.push({
+          x:(i/(pointCount-1))*width,
+          y:base,
+          vy:0,
+          target:base
+        });
+      }
+    }
+
+    function spawnBubble(big=false){
+      if(bubbles.length>=maxBubbles)return;
+
+      bubbles.push({
+        x:Math.random()*width*.78+width*.11,
+        y:height+10,
+        r:big?Math.random()*7+9:Math.random()*3.5+2.5,
+        vy:big?-(Math.random()*.18+.18):-(Math.random()*.28+.16),
+        wobble:Math.random()*Math.PI*2,
+        life:1
+      });
+    }
+
+    function spawnParticle(){
+      if(particles.length>=maxParticles)return;
+
+      particles.push({
+        x:Math.random()*width,
+        y:height*.62+Math.random()*height*.32,
+        r:Math.random()*1.3+.4,
+        a:Math.random()*.35+.12,
+        vy:-(Math.random()*.05+.015)
+      });
+    }
+
+    function disturb(x,force=-14,radius=52){
+      for(const p of surface){
+        const d=Math.abs(p.x-x);
+
+        if(d<radius){
+          const falloff=1-d/radius;
+          p.vy+=force*falloff;
+        }
+      }
+    }
+
+    function nextPhrase(){
+      phraseIndex=(phraseIndex+1)%phrases.length;
+      idea.classList.add("fade");
+
+      setTimeout(()=>{
+        idea.innerHTML=phrases[phraseIndex];
+        idea.classList.remove("fade");
+      },140);
+    }
+
+    function rippleAt(x,y){
+      const r=document.createElement("span");
+      r.className="ripple";
+      r.style.left=x+"px";
+      r.style.top=y+"px";
+      jar.appendChild(r);
+      setTimeout(()=>r.remove(),880);
+    }
+
+    function surfaceYAt(x){
+      const t=(x/width)*(pointCount-1);
+      const i=Math.floor(t);
+      const f=t-i;
+      const a=surface[Math.max(0,Math.min(pointCount-1,i))];
+      const b=surface[Math.max(0,Math.min(pointCount-1,i+1))];
+      return a.y*(1-f)+b.y*f;
+    }
+
+    function update(dt,time){
+      const spring=.018;
+      const damping=.985;
+      const spread=.14;
+
+      for(let i=0;i<surface.length;i++){
+        const p=surface[i];
+        p.target=height*.58+Math.sin(time*.0011+i*.28)*1.6;
+        const accel=(p.target-p.y)*spring;
+        p.vy+=accel*dt;
+        p.vy*=Math.pow(damping,dt);
+      }
+
+      for(let pass=0;pass<2;pass++){
+        for(let i=0;i<surface.length;i++){
+          if(i>0){
+            const diff=surface[i].y-surface[i-1].y;
+            surface[i-1].vy+=diff*spread*.08*dt;
+          }
+
+          if(i<surface.length-1){
+            const diff=surface[i].y-surface[i+1].y;
+            surface[i+1].vy+=diff*spread*.08*dt;
+          }
+        }
+      }
+
+      if(pressed&&pointer.active){
+        const idx=Math.round((pointer.x/width)*(pointCount-1));
+
+        for(let i=0;i<surface.length;i++){
+          const d=Math.abs(i-idx);
+
+          if(d<7){
+            const pull=1-d/7;
+            const desired=Math.min(height*.78,pointer.y);
+            surface[i].vy+=(desired-surface[i].y)*.0035*pull*dt;
+          }
+        }
+      }
+
+      for(const p of surface)p.y+=p.vy*dt;
+
+      if(Math.random()<.015*dt)spawnBubble(false);
+      if(Math.random()<.0013*dt)spawnBubble(true);
+      if(Math.random()<.035*dt)spawnParticle();
+
+      for(const b of bubbles){
+        b.y+=b.vy*dt;
+        b.x+=Math.sin(time*.002+b.wobble)*.08*dt;
+        const sy=surfaceYAt(Math.max(0,Math.min(width,b.x)));
+
+        if(b.y-b.r<sy){
+          b.life-=.045*dt;
+          b.r+=.12*dt;
+        }
+      }
+
+      bubbles=bubbles.filter(b=>b.life>0&&b.y>-20);
+
+      for(const p of particles){
+        p.y+=p.vy*dt;
+        if(p.y<height*.6)p.y=height*.95;
+      }
+    }
+
+    function drawSlimePath(){
+      ctx.beginPath();
+      ctx.moveTo(0,height);
+      ctx.lineTo(0,surface[0].y);
+
+      for(let i=0;i<surface.length-1;i++){
+        const p=surface[i];
+        const n=surface[i+1];
+        const mx=(p.x+n.x)/2;
+        const my=(p.y+n.y)/2;
+        ctx.quadraticCurveTo(p.x,p.y,mx,my);
+      }
+
+      const lastP=surface[surface.length-1];
+      ctx.lineTo(lastP.x,lastP.y);
+      ctx.lineTo(width,height);
+      ctx.closePath();
+    }
+
+    function draw(){
+      ctx.clearRect(0,0,width,height);
+
+      const grad=ctx.createLinearGradient(0,height*.45,0,height);
+      grad.addColorStop(0,"rgba(224,196,255,.96)");
+      grad.addColorStop(.32,"rgba(168,85,247,.94)");
+      grad.addColorStop(1,"rgba(84,28,156,.98)");
+
+      ctx.save();
+      ctx.shadowColor="rgba(168,85,247,.38)";
+      ctx.shadowBlur=22;
+      drawSlimePath();
+      ctx.fillStyle=grad;
+      ctx.fill();
+      ctx.restore();
+
+      ctx.save();
+      drawSlimePath();
+      ctx.clip();
+
+      const shine=ctx.createLinearGradient(0,0,width,0);
+      shine.addColorStop(0,"rgba(255,255,255,.02)");
+      shine.addColorStop(.22,"rgba(255,255,255,.10)");
+      shine.addColorStop(.38,"rgba(255,255,255,.025)");
+      shine.addColorStop(1,"rgba(255,255,255,0)");
+      ctx.fillStyle=shine;
+      ctx.fillRect(0,height*.52,width,height*.48);
+
+      for(const p of particles){
+        ctx.globalAlpha=p.a;
+        ctx.fillStyle="#f2ddff";
+        ctx.beginPath();
+        ctx.arc(p.x,p.y,p.r,0,Math.PI*2);
+        ctx.fill();
+      }
+
+      ctx.globalAlpha=1;
+
+      for(const b of bubbles){
+        const bg=ctx.createRadialGradient(
+          b.x-b.r*.35,b.y-b.r*.35,b.r*.15,
+          b.x,b.y,b.r
+        );
+
+        bg.addColorStop(0,"rgba(255,255,255,.62)");
+        bg.addColorStop(.25,"rgba(235,210,255,.24)");
+        bg.addColorStop(1,"rgba(74,21,130,.08)");
+
+        ctx.fillStyle=bg;
+        ctx.strokeStyle=`rgba(245,225,255,${.24*b.life})`;
+        ctx.lineWidth=1;
+        ctx.beginPath();
+        ctx.arc(b.x,b.y,b.r,0,Math.PI*2);
+        ctx.fill();
+        ctx.stroke();
+      }
+
+      ctx.restore();
+
+      ctx.save();
+      ctx.strokeStyle="rgba(255,255,255,.23)";
+      ctx.lineWidth=1.3;
+      ctx.beginPath();
+
+      for(let i=0;i<surface.length;i++){
+        const p=surface[i];
+
+        if(i===0){
+          ctx.moveTo(p.x,p.y-1);
+        }else{
+          const prev=surface[i-1];
+          const mx=(prev.x+p.x)/2;
+          const my=(prev.y+p.y)/2;
+          ctx.quadraticCurveTo(prev.x,prev.y-1,mx,my-1);
+        }
+      }
+
+      ctx.stroke();
+      ctx.restore();
+    }
+
+    function loop(time){
+      if(!visible)return;
+
+      const dt=Math.min((time-last)/16.6667,2);
+      last=time;
+      update(dt,time);
+      draw();
+      raf=requestAnimationFrame(loop);
+    }
+
+    function localPos(e){
+      const rect=jar.getBoundingClientRect();
+      return{x:e.clientX-rect.left,y:e.clientY-rect.top};
+    }
+
+    jar.addEventListener("pointerdown",e=>{
+      jar.setPointerCapture?.(e.pointerId);
+      const p=localPos(e);
+      pointer={...p,active:true};
+      pressed=true;
+      disturb(p.x,-16,58);
+      rippleAt(p.x,p.y);
+      nextPhrase();
+    });
+
+    jar.addEventListener("pointermove",e=>{
+      if(!pressed)return;
+      pointer={...localPos(e),active:true};
+      disturb(pointer.x,-2.4,34);
+    });
+
+    function release(e){
+      pressed=false;
+      pointer.active=false;
+      try{jar.releasePointerCapture?.(e.pointerId)}catch{}
+    }
+
+    jar.addEventListener("pointerup",release);
+    jar.addEventListener("pointercancel",release);
+
+    jar.addEventListener("keydown",e=>{
+      if(e.key==="Enter"||e.key===" "){
+        e.preventDefault();
+        const x=width/2;
+        disturb(x,-18,64);
+        rippleAt(x,height*.55);
+        nextPhrase();
+      }
+    });
+
+    document.addEventListener("visibilitychange",()=>{
+      visible=!document.hidden;
+      cancelAnimationFrame(raf);
+
+      if(visible){
+        last=performance.now();
+        raf=requestAnimationFrame(loop);
+      }
+    });
+
+    if("ResizeObserver" in window){
+      new ResizeObserver(resize).observe(jar);
+    }else{
+      window.addEventListener("resize",resize);
+    }
+
+    resize();
+    for(let i=0;i<7;i++)spawnBubble(false);
+    for(let i=0;i<28;i++)spawnParticle();
+    raf=requestAnimationFrame(loop);
+  </script>
+</body>
+</html>

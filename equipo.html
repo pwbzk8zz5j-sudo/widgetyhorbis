@@ -1,0 +1,698 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="color-scheme" content="dark" />
+  <title>Control de equipo — Yhorbis</title>
+
+  <style>
+    :root{
+      --text:#f7f3fb;
+      --muted:#a49bad;
+      --purple:#a855f7;
+      --purple-2:#7c3aed;
+      --soft:#e0c4ff;
+      --green:#91e4c2;
+      --red:#ff91a0;
+      --border:rgba(255,255,255,.09);
+    }
+
+    *{box-sizing:border-box}
+
+    html,body{
+      margin:0;
+      width:100%;
+      min-height:100%;
+      background:transparent!important;
+      color:var(--text);
+      font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+    }
+
+    body{
+      display:grid;
+      place-items:center;
+      padding:8px;
+    }
+
+    button{font:inherit}
+
+    .widget{
+      position:relative;
+      isolation:isolate;
+      overflow:hidden;
+      width:min(100%,980px);
+      border:1px solid var(--border);
+      border-radius:24px;
+      background:
+        radial-gradient(circle at 88% 6%,rgba(168,85,247,.18),transparent 27%),
+        linear-gradient(145deg,rgba(20,16,27,.88),rgba(7,6,10,.92));
+      box-shadow:
+        0 18px 48px rgba(0,0,0,.31),
+        inset 0 1px 0 rgba(255,255,255,.05);
+      backdrop-filter:blur(22px) saturate(125%);
+      -webkit-backdrop-filter:blur(22px) saturate(125%);
+    }
+
+    .widget::before{
+      content:"";
+      position:absolute;
+      inset:0;
+      z-index:-1;
+      pointer-events:none;
+      opacity:.28;
+      background-image:
+        linear-gradient(rgba(255,255,255,.016) 1px,transparent 1px),
+        linear-gradient(90deg,rgba(255,255,255,.016) 1px,transparent 1px);
+      background-size:30px 30px;
+    }
+
+    .topbar{
+      min-height:52px;
+      padding:13px 17px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:16px;
+      border-bottom:1px solid var(--border);
+    }
+
+    .brand{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      min-width:0;
+    }
+
+    .brand-mark{
+      width:31px;
+      height:31px;
+      display:grid;
+      place-items:center;
+      flex:0 0 auto;
+      border:1px solid rgba(224,196,255,.16);
+      border-radius:10px;
+      color:var(--soft);
+      background:linear-gradient(135deg,rgba(124,58,237,.28),rgba(168,85,247,.12));
+      font-size:.92rem;
+    }
+
+    .eyebrow{
+      margin-bottom:2px;
+      color:var(--soft);
+      font-size:.52rem;
+      font-weight:820;
+      letter-spacing:.15em;
+      text-transform:uppercase;
+    }
+
+    h1{
+      margin:0;
+      font-size:1.02rem;
+      line-height:1.1;
+      letter-spacing:-.02em;
+      white-space:nowrap;
+    }
+
+    .status-pill{
+      flex:0 0 auto;
+      padding:7px 10px;
+      border:1px solid rgba(224,196,255,.16);
+      border-radius:999px;
+      color:var(--soft);
+      background:rgba(168,85,247,.07);
+      font-size:.56rem;
+      font-weight:820;
+      white-space:nowrap;
+    }
+
+    .content{
+      display:grid;
+      grid-template-columns:.9fr 1.35fr;
+      min-height:166px;
+    }
+
+    .section{
+      position:relative;
+      padding:17px;
+    }
+
+    .section + .section{
+      border-left:1px solid var(--border);
+    }
+
+    .section-head{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+      margin-bottom:12px;
+    }
+
+    .section-title{
+      display:flex;
+      align-items:center;
+      gap:7px;
+      font-size:.71rem;
+      font-weight:820;
+    }
+
+    .tiny{
+      color:var(--muted);
+      font-size:.49rem;
+      font-weight:760;
+      letter-spacing:.08em;
+      text-transform:uppercase;
+    }
+
+    .camera-check{
+      min-height:88px;
+      display:flex;
+      align-items:center;
+      gap:13px;
+      width:100%;
+      padding:13px;
+      border:1px solid rgba(255,255,255,.05);
+      border-radius:16px;
+      color:inherit;
+      background:rgba(255,255,255,.026);
+      cursor:pointer;
+      text-align:left;
+      transition:transform .18s ease,background .18s ease,border-color .18s ease;
+    }
+
+    .camera-check:hover{
+      transform:translateY(-1px);
+      border-color:rgba(224,196,255,.13);
+      background:rgba(168,85,247,.065);
+    }
+
+    .camera-icon{
+      position:relative;
+      width:54px;
+      height:40px;
+      flex:0 0 auto;
+    }
+
+    .camera-body{
+      position:absolute;
+      left:2px;
+      top:8px;
+      width:40px;
+      height:28px;
+      border:1px solid rgba(224,196,255,.14);
+      border-radius:8px;
+      background:linear-gradient(145deg,#2c2634,#17131d);
+    }
+
+    .camera-body::before{
+      content:"";
+      position:absolute;
+      left:7px;
+      top:-7px;
+      width:15px;
+      height:7px;
+      border:1px solid rgba(224,196,255,.11);
+      border-radius:4px 4px 2px 2px;
+      background:#241f2b;
+    }
+
+    .lens{
+      position:absolute;
+      right:1px;
+      top:10px;
+      width:25px;
+      height:25px;
+      border:3px solid #2b2432;
+      border-radius:50%;
+      background:radial-gradient(circle at 38% 35%,#d4b2f3 0 8%,#65417d 9% 20%,#16121c 21% 52%,#09080c 53%);
+      box-shadow:0 0 14px rgba(168,85,247,.14);
+    }
+
+    .check-copy{
+      min-width:0;
+      flex:1;
+    }
+
+    .check-copy strong{
+      display:block;
+      margin-bottom:3px;
+      font-size:.76rem;
+    }
+
+    .check-copy span{
+      display:block;
+      color:var(--muted);
+      font-size:.57rem;
+    }
+
+    .check-box{
+      width:28px;
+      height:28px;
+      display:grid;
+      place-items:center;
+      flex:0 0 auto;
+      border:1px solid rgba(224,196,255,.2);
+      border-radius:9px;
+      color:transparent;
+      background:rgba(255,255,255,.023);
+      font-size:.7rem;
+      font-weight:900;
+      transition:background .2s ease,color .2s ease;
+    }
+
+    .camera-check.done .check-box{
+      color:var(--soft);
+      background:rgba(168,85,247,.18);
+    }
+
+    .audio-layout{
+      display:grid;
+      grid-template-columns:1fr auto;
+      gap:15px;
+      align-items:center;
+    }
+
+    .count-wrap{
+      display:flex;
+      align-items:end;
+      gap:8px;
+      margin-bottom:9px;
+    }
+
+    .count{
+      font-size:2.2rem;
+      font-weight:900;
+      letter-spacing:-.05em;
+      line-height:.9;
+    }
+
+    .count small{
+      color:var(--muted);
+      font-size:.66rem;
+      font-weight:720;
+      letter-spacing:0;
+    }
+
+    .cells{
+      display:flex;
+      gap:6px;
+      margin-bottom:9px;
+    }
+
+    .cell{
+      height:12px;
+      flex:1;
+      min-width:31px;
+      border:1px solid rgba(224,196,255,.15);
+      border-radius:999px;
+      background:rgba(255,255,255,.032);
+      transition:background .25s ease,box-shadow .25s ease;
+    }
+
+    .cell.used{
+      background:linear-gradient(90deg,var(--purple-2),var(--purple));
+      box-shadow:0 0 12px rgba(168,85,247,.2);
+    }
+
+    .alert{
+      min-height:17px;
+      margin-bottom:10px;
+      color:var(--muted);
+      font-size:.55rem;
+    }
+
+    .alert.hot{
+      color:var(--red);
+      font-weight:820;
+    }
+
+    .buttons{
+      display:flex;
+      gap:7px;
+      flex-wrap:wrap;
+    }
+
+    button.action{
+      appearance:none;
+      min-height:34px;
+      padding:0 11px;
+      border-radius:11px;
+      cursor:pointer;
+      font-size:.58rem;
+      font-weight:820;
+      transition:transform .18s ease;
+    }
+
+    button.action:hover{transform:translateY(-1px)}
+    button.action:active{transform:scale(.98)}
+
+    .primary{
+      border:0;
+      color:white;
+      background:linear-gradient(135deg,var(--purple-2),var(--purple));
+      box-shadow:0 9px 20px rgba(124,58,237,.2);
+    }
+
+    .secondary{
+      border:1px solid var(--border);
+      color:var(--muted);
+      background:rgba(255,255,255,.04);
+    }
+
+    .charge{
+      display:none;
+      border:0;
+      color:#251126;
+      background:linear-gradient(135deg,#f0ccff,#c99cff);
+      box-shadow:0 10px 22px rgba(224,196,255,.16);
+    }
+
+    .charge.visible{display:inline-flex;align-items:center}
+
+    .receiver{
+      position:relative;
+      width:145px;
+      height:72px;
+      flex:0 0 auto;
+      border:1px solid rgba(224,196,255,.16);
+      border-radius:15px;
+      background:
+        linear-gradient(145deg,rgba(168,85,247,.11),rgba(255,255,255,.018)),
+        #19151f;
+      box-shadow:0 14px 23px rgba(0,0,0,.22);
+    }
+
+    .screen{
+      position:absolute;
+      left:12px;
+      top:14px;
+      width:72px;
+      height:41px;
+      padding:7px;
+      border:1px solid rgba(224,196,255,.1);
+      border-radius:8px;
+      background:#0b0910;
+    }
+
+    .screen-top{
+      display:flex;
+      justify-content:space-between;
+      color:var(--soft);
+      font-size:.36rem;
+      font-weight:820;
+      letter-spacing:.08em;
+    }
+
+    .levels{
+      display:flex;
+      align-items:end;
+      gap:3px;
+      height:18px;
+      margin-top:4px;
+    }
+
+    .levels i{
+      display:block;
+      width:4px;
+      border-radius:3px;
+      background:linear-gradient(var(--soft),var(--purple));
+      animation:level 1.3s ease-in-out infinite alternate;
+    }
+
+    .levels i:nth-child(1){height:7px}
+    .levels i:nth-child(2){height:13px;animation-delay:.2s}
+    .levels i:nth-child(3){height:10px;animation-delay:.4s}
+    .levels i:nth-child(4){height:16px;animation-delay:.1s}
+    .levels i:nth-child(5){height:11px;animation-delay:.3s}
+    .levels i:nth-child(6){height:14px;animation-delay:.5s}
+
+    .knobs{
+      position:absolute;
+      right:12px;
+      top:17px;
+      display:grid;
+      grid-template-columns:repeat(2,20px);
+      gap:7px;
+    }
+
+    .knob{
+      width:20px;
+      height:20px;
+      border:1px solid rgba(224,196,255,.12);
+      border-radius:50%;
+      background:radial-gradient(circle at 35% 32%,#8b6aa6 0 9%,#372a42 10% 31%,#17121c 32%);
+      box-shadow:inset -3px -3px 6px rgba(0,0,0,.25);
+    }
+
+    .antenna{
+      position:absolute;
+      right:18px;
+      top:-25px;
+      width:4px;
+      height:32px;
+      border-radius:999px;
+      background:#2a2431;
+      transform:rotate(8deg);
+      transform-origin:bottom;
+    }
+
+    .toast{
+      position:absolute;
+      left:50%;
+      bottom:10px;
+      z-index:5;
+      opacity:0;
+      pointer-events:none;
+      padding:8px 11px;
+      border:1px solid rgba(224,196,255,.14);
+      border-radius:999px;
+      color:var(--soft);
+      background:rgba(17,14,23,.94);
+      font-size:.54rem;
+      font-weight:820;
+      transform:translate(-50%,8px);
+      transition:opacity .22s ease,transform .22s ease;
+    }
+
+    .toast.show{
+      opacity:1;
+      transform:translate(-50%,0);
+    }
+
+    @keyframes level{to{transform:scaleY(.55);opacity:.65}}
+
+    @media(max-width:760px){
+      .content{grid-template-columns:1fr}
+      .section + .section{
+        border-left:none;
+        border-top:1px solid var(--border);
+      }
+      .audio-layout{grid-template-columns:1fr}
+      .receiver{display:none}
+      .topbar{align-items:flex-start}
+    }
+
+    @media(prefers-reduced-motion:reduce){
+      .levels i{animation:none}
+    }
+  </style>
+</head>
+
+<body>
+  <main class="widget">
+    <header class="topbar">
+      <div class="brand">
+        <div class="brand-mark">🎬</div>
+        <div>
+          <div class="eyebrow">Pre-flight check</div>
+          <h1>Control de equipo</h1>
+        </div>
+      </div>
+      <div class="status-pill" id="topStatus">Equipo listo</div>
+    </header>
+
+    <section class="content">
+      <article class="section">
+        <div class="section-head">
+          <div class="section-title">📷 Cámara</div>
+          <div class="tiny">Checklist</div>
+        </div>
+
+        <button class="camera-check" id="cameraCheck" type="button">
+          <span class="camera-icon" aria-hidden="true">
+            <span class="camera-body"></span>
+            <span class="lens"></span>
+          </span>
+
+          <span class="check-copy">
+            <strong>Batería cargada</strong>
+            <span>Márcalo antes de salir.</span>
+          </span>
+
+          <span class="check-box">✓</span>
+        </button>
+      </article>
+
+      <article class="section">
+        <div class="section-head">
+          <div class="section-title">🎚️ Audio inalámbrico</div>
+          <div class="tiny">Carga cada 5 usos</div>
+        </div>
+
+        <div class="audio-layout">
+          <div>
+            <div class="count-wrap">
+              <div class="count"><span id="count">0</span><small> / 5 usos</small></div>
+            </div>
+
+            <div class="cells">
+              <span class="cell"></span>
+              <span class="cell"></span>
+              <span class="cell"></span>
+              <span class="cell"></span>
+              <span class="cell"></span>
+            </div>
+
+            <div class="alert" id="alert">Quedan 5 usos antes de cargar.</div>
+
+            <div class="buttons" id="normalButtons">
+              <button class="action primary" id="addUse">+ Registrar uso</button>
+              <button class="action secondary" id="undoUse" title="Restar un uso">− Deshacer</button>
+            </div>
+
+            <button class="action charge" id="chargedButton">🔋 Ya lo cargué</button>
+          </div>
+
+          <div class="receiver" aria-hidden="true">
+            <div class="antenna"></div>
+            <div class="screen">
+              <div class="screen-top"><span>REC</span><span>2.4G</span></div>
+              <div class="levels">
+                <i></i><i></i><i></i><i></i><i></i><i></i>
+              </div>
+            </div>
+            <div class="knobs">
+              <div class="knob"></div><div class="knob"></div>
+              <div class="knob"></div><div class="knob"></div>
+            </div>
+          </div>
+        </div>
+      </article>
+    </section>
+
+    <div class="toast" id="toast">Uso registrado</div>
+  </main>
+
+  <script>
+    const KEY_USES = "film_audio_uses_v1";
+    const KEY_CAMERA = "film_camera_ready_v1";
+
+    const countEl = document.getElementById("count");
+    const cells = [...document.querySelectorAll(".cell")];
+    const alertEl = document.getElementById("alert");
+    const addUse = document.getElementById("addUse");
+    const undoUse = document.getElementById("undoUse");
+    const chargedButton = document.getElementById("chargedButton");
+    const normalButtons = document.getElementById("normalButtons");
+    const cameraCheck = document.getElementById("cameraCheck");
+    const toast = document.getElementById("toast");
+    const topStatus = document.getElementById("topStatus");
+
+    let uses = Math.max(0, Math.min(5, Number(localStorage.getItem(KEY_USES) || 0)));
+    let cameraReady = localStorage.getItem(KEY_CAMERA) === "true";
+    let toastTimer;
+
+    function showToast(text){
+      toast.textContent = text;
+      toast.classList.add("show");
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => toast.classList.remove("show"), 1500);
+    }
+
+    function setStatus(text, type){
+      topStatus.textContent = text;
+
+      if(type === "danger"){
+        topStatus.style.color = "var(--red)";
+        topStatus.style.borderColor = "rgba(255,145,160,.2)";
+        topStatus.style.background = "rgba(255,145,160,.08)";
+      }else if(type === "ready"){
+        topStatus.style.color = "var(--green)";
+        topStatus.style.borderColor = "rgba(145,228,194,.18)";
+        topStatus.style.background = "rgba(145,228,194,.09)";
+      }else{
+        topStatus.style.color = "var(--soft)";
+        topStatus.style.borderColor = "rgba(224,196,255,.18)";
+        topStatus.style.background = "rgba(168,85,247,.08)";
+      }
+    }
+
+    function render(){
+      countEl.textContent = uses;
+
+      cells.forEach((cell,index) => {
+        cell.classList.toggle("used", index < uses);
+      });
+
+      cameraCheck.classList.toggle("done", cameraReady);
+
+      if(uses >= 5){
+        alertEl.textContent = "Carga necesaria antes del próximo uso.";
+        alertEl.classList.add("hot");
+        normalButtons.style.display = "none";
+        chargedButton.classList.add("visible");
+        setStatus("Carga pendiente","danger");
+      }else{
+        const remaining = 5 - uses;
+        alertEl.textContent = remaining === 1
+          ? "Queda 1 uso antes de cargar."
+          : `Quedan ${remaining} usos antes de cargar.`;
+
+        alertEl.classList.remove("hot");
+        normalButtons.style.display = "flex";
+        chargedButton.classList.remove("visible");
+
+        if(cameraReady){
+          setStatus("Equipo listo","ready");
+        }else{
+          setStatus("Revisa la cámara","pending");
+        }
+      }
+
+      localStorage.setItem(KEY_USES,String(uses));
+      localStorage.setItem(KEY_CAMERA,String(cameraReady));
+    }
+
+    addUse.addEventListener("click",() => {
+      if(uses < 5){
+        uses++;
+        showToast(uses === 5 ? "Hora de cargar el audio" : "Uso registrado");
+        render();
+      }
+    });
+
+    undoUse.addEventListener("click",() => {
+      if(uses > 0){
+        uses--;
+        showToast("Último uso eliminado");
+        render();
+      }
+    });
+
+    chargedButton.addEventListener("click",() => {
+      uses = 0;
+      showToast("Contador reiniciado");
+      render();
+    });
+
+    cameraCheck.addEventListener("click",() => {
+      cameraReady = !cameraReady;
+      showToast(cameraReady ? "Cámara lista" : "Cámara pendiente");
+      render();
+    });
+
+    render();
+  </script>
+</body>
+</html>

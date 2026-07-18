@@ -1,0 +1,317 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="color-scheme" content="dark">
+  <title>Recordatorio de proyectos — Yhorbis</title>
+
+  <style>
+    :root{
+      --text:#f7f3fb;
+      --muted:#9d93a6;
+      --purple:#a855f7;
+      --purple-2:#7c3aed;
+      --soft:#e0c4ff;
+      --border:rgba(255,255,255,.085);
+    }
+
+    *{box-sizing:border-box}
+
+    html,body{
+      margin:0;
+      width:100%;
+      min-height:100%;
+      background:transparent!important;
+      color:var(--text);
+      font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+    }
+
+    body{
+      display:grid;
+      place-items:center;
+      padding:8px;
+    }
+
+    button{font:inherit}
+
+    .widget{
+      position:relative;
+      isolation:isolate;
+      overflow:hidden;
+      width:min(100%,980px);
+      padding:19px 22px;
+      border:1px solid var(--border);
+      border-radius:23px;
+      background:
+        radial-gradient(circle at 92% 10%,rgba(168,85,247,.18),transparent 28%),
+        linear-gradient(145deg,rgba(20,16,27,.88),rgba(7,6,10,.92));
+      box-shadow:
+        0 17px 43px rgba(0,0,0,.31),
+        inset 0 1px 0 rgba(255,255,255,.05);
+      backdrop-filter:blur(22px) saturate(125%);
+      -webkit-backdrop-filter:blur(22px) saturate(125%);
+    }
+
+    .widget::before{
+      content:"";
+      position:absolute;
+      right:-45px;
+      bottom:-72px;
+      z-index:-1;
+      width:170px;
+      height:170px;
+      border:1px solid rgba(224,196,255,.08);
+      border-radius:50%;
+      box-shadow:
+        0 0 0 24px rgba(168,85,247,.02),
+        0 0 0 48px rgba(168,85,247,.012);
+    }
+
+    .header{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:16px;
+      margin-bottom:15px;
+    }
+
+    .header h1{
+      margin:0;
+      font-size:1.15rem;
+      font-weight:820;
+      letter-spacing:-.03em;
+    }
+
+    .done{
+      min-height:36px;
+      padding:0 14px;
+      border:0;
+      border-radius:12px;
+      color:white;
+      background:linear-gradient(135deg,var(--purple-2),var(--purple));
+      box-shadow:0 10px 22px rgba(124,58,237,.2);
+      cursor:pointer;
+      font-size:.62rem;
+      font-weight:820;
+      white-space:nowrap;
+      transition:transform .18s ease;
+    }
+
+    .done:hover{transform:translateY(-1px)}
+    .done:active{transform:scale(.98)}
+
+    .row{
+      display:grid;
+      grid-template-columns:76px minmax(0,1fr);
+      gap:24px;
+      align-items:center;
+    }
+
+    .clapper{
+      width:69px;
+      height:69px;
+      padding:0;
+      border:0;
+      color:inherit;
+      background:transparent;
+      cursor:pointer;
+      filter:drop-shadow(0 13px 18px rgba(0,0,0,.27));
+    }
+
+    .clapper svg{
+      width:100%;
+      height:100%;
+      overflow:visible;
+    }
+
+    .clapper.clack{animation:clack .44s cubic-bezier(.2,.8,.2,1)}
+
+    .note-wrapper{
+      display:flex;
+      flex-direction:column;
+      justify-content:center;
+      min-height:72px;
+    }
+
+    .note{
+      max-width:680px;
+      color:#fff;
+      font-size:.91rem;
+      font-weight:680;
+      line-height:1.5;
+      letter-spacing:-.018em;
+      transition:opacity .18s ease,transform .18s ease;
+    }
+
+    .note strong{
+      color:var(--soft);
+      font-weight:820;
+    }
+
+    .note.switching{
+      opacity:.2;
+      transform:translateY(4px);
+    }
+
+    .hint{
+      margin-top:9px;
+      color:var(--muted);
+      font-size:.55rem;
+    }
+
+    .last{
+      margin-top:6px;
+      color:#756b7d;
+      font-size:.51rem;
+    }
+
+    .toast{
+      position:absolute;
+      left:50%;
+      bottom:7px;
+      opacity:0;
+      pointer-events:none;
+      color:var(--soft);
+      font-size:.55rem;
+      font-weight:760;
+      transform:translate(-50%,8px);
+      transition:.25s;
+    }
+
+    .toast.show{
+      opacity:1;
+      transform:translate(-50%,0);
+    }
+
+    @keyframes clack{
+      0%{transform:rotate(0)}
+      35%{transform:rotate(-11deg)}
+      70%{transform:rotate(3deg)}
+      100%{transform:rotate(0)}
+    }
+
+    @media(max-width:560px){
+      .widget{padding:17px}
+      .header{align-items:flex-start}
+      .row{grid-template-columns:58px minmax(0,1fr);gap:15px}
+      .clapper{width:56px;height:56px}
+      .done{padding-inline:10px}
+    }
+
+    @media(prefers-reduced-motion:reduce){
+      .clapper.clack{animation:none}
+    }
+  </style>
+</head>
+
+<body>
+  <main class="widget">
+    <div class="header">
+      <h1>Actualiza tus proyectos</h1>
+      <button id="done" class="done">✓ Ya actualicé</button>
+    </div>
+
+    <div class="row">
+      <button id="clapper" class="clapper" type="button" aria-label="Cambiar recordatorio">
+        <svg viewBox="0 0 64 64" aria-hidden="true">
+          <rect x="12" y="26" width="40" height="24" rx="5" fill="#221d2c" stroke="#7650ae"/>
+          <rect x="10" y="12" width="44" height="12" rx="3" fill="#ddd4e8"/>
+          <path d="M10 12h44M18 12l8 12M34 12l8 12M50 12l4 6" stroke="#24202a" stroke-width="2"/>
+          <circle cx="46" cy="43" r="3" fill="#a855f7"/>
+        </svg>
+      </button>
+
+      <div class="note-wrapper">
+        <div id="msg" class="note">
+          Antes de irte, <strong>actualiza el estado</strong> y deja escrito el <strong>siguiente paso</strong>.
+        </div>
+
+        <div class="hint">
+          Haz clic en la claqueta para ver otro recordatorio.
+        </div>
+
+        <div class="last" id="lastUpdate">
+          Todavía no has marcado una actualización.
+        </div>
+      </div>
+    </div>
+
+    <div id="toast" class="toast">
+      ✨ El Yhorbis del futuro te lo agradecerá.
+    </div>
+  </main>
+
+  <script>
+    const messages=[
+      'Antes de irte, <strong>actualiza el estado</strong> y deja escrito el <strong>siguiente paso</strong>.',
+      '¿Ya cambió de etapa? Que también cambie en <strong>Notion</strong>.',
+      'Deja un <strong>siguiente paso</strong> que puedas empezar en menos de cinco minutos.',
+      'Una idea escrita vale más que una idea olvidada.',
+      'Actualizar el estado toma cinco segundos y evita mucho caos.',
+      'No hace falta terminarlo hoy. Solo deja claro <strong>qué sigue</strong>.'
+    ];
+
+    const STORAGE_KEY="last_project_update";
+    let last=-1;
+    let toastTimer;
+
+    const msg=document.getElementById("msg");
+    const clap=document.getElementById("clapper");
+    const done=document.getElementById("done");
+    const toast=document.getElementById("toast");
+    const lastUpdate=document.getElementById("lastUpdate");
+
+    function renderLastUpdate(){
+      const stored=localStorage.getItem(STORAGE_KEY);
+
+      if(!stored){
+        lastUpdate.textContent="Todavía no has marcado una actualización.";
+        return;
+      }
+
+      const date=new Date(stored);
+
+      if(Number.isNaN(date.getTime())){
+        lastUpdate.textContent="Todavía no has marcado una actualización.";
+        return;
+      }
+
+      lastUpdate.textContent=`Última actualización: ${date.toLocaleString("es-PE",{
+        dateStyle:"medium",
+        timeStyle:"short"
+      })}.`;
+    }
+
+    function change(){
+      let i;
+      do{i=Math.floor(Math.random()*messages.length)}while(i===last);
+      last=i;
+
+      msg.classList.add("switching");
+
+      setTimeout(()=>{
+        msg.innerHTML=messages[i];
+        msg.classList.remove("switching");
+      },120);
+
+      clap.classList.remove("clack");
+      void clap.offsetWidth;
+      clap.classList.add("clack");
+    }
+
+    clap.addEventListener("click",change);
+
+    done.addEventListener("click",()=>{
+      localStorage.setItem(STORAGE_KEY,new Date().toISOString());
+      renderLastUpdate();
+
+      toast.classList.add("show");
+      clearTimeout(toastTimer);
+      toastTimer=setTimeout(()=>toast.classList.remove("show"),2500);
+    });
+
+    renderLastUpdate();
+  </script>
+</body>
+</html>
