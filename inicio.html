@@ -122,6 +122,10 @@
 
     .sleep-note.visible{display:block}
 
+    .hero.sleep-mode .sleep-note{
+      animation:appear .35s ease both,sleepPulse 3.4s ease-in-out infinite;
+    }
+
     .sleep-label{
       margin-bottom:6px;
       color:var(--accent-soft);
@@ -167,6 +171,11 @@
     .s2{right:22%;top:18%;animation-delay:1.1s}
     .s3{right:6%;bottom:24%;animation-delay:1.8s}
 
+    @keyframes sleepPulse{
+      0%,100%{box-shadow:inset 0 1px 0 rgba(255,255,255,.035),0 0 0 rgba(168,85,247,0)}
+      50%{box-shadow:inset 0 1px 0 rgba(255,255,255,.045),0 0 25px rgba(168,85,247,.10)}
+    }
+
     @keyframes appear{
       from{opacity:0;transform:translateY(6px)}
       to{opacity:1;transform:translateY(0)}
@@ -208,7 +217,7 @@
     }
 
     @media(prefers-reduced-motion:reduce){
-      .moon,.star,.sleep-note{animation:none}
+      .moon,.star,.sleep-note,.hero.sleep-mode .sleep-note{animation:none}
     }
   </style>
 </head>
@@ -234,92 +243,163 @@
     </div>
 
     <section class="sleep-note" id="sleepNote">
-      <div class="sleep-label">🌙 Hora de descansar</div>
+      <div class="sleep-label" id="sleepLabel">🌙 Yaiza dice: hora de mimir</div>
       <div class="sleep-text" id="sleepMessage"></div>
     </section>
   </main>
 
   <script>
+    const TIME_ZONE = "America/Lima";
+
     const mensajesDormir = [
-      "Amor... guarda el proyecto y ven a dormir. Mañana seguimos. 🤍",
-      "El video puede esperar unas horas. Tú también necesitas descansar.",
-      "Ya hiciste bastante por hoy. Mañana seguimos.",
-      "No quiero que mañana andes como zombie. 🥺",
-      "Descansar también es parte del trabajo.",
-      "Te prometo que mañana todo saldrá mejor con sueño completo.",
-      "Cinco minutos más... ya te conozco. 😂 Mejor ven a dormir.",
-      "Tu cama te está extrañando.",
-      "Guarda el proyecto antes de que Premiere haga de las suyas. 😭",
-      "Yo ya te mandé a dormir. Ahora hazme caso. 💜"
+      "Amor... guarda el proyecto y ven a mimir. Mañana seguimos. 🤍",
+      "Yhorbis, el video puede esperar. Tus ojitos no.",
+      "¿Otra vez dijiste «cinco minutos más»? Ya te conozco. 😂",
+      "Guarda antes de que Premiere decida cerrarse por ti. 😭",
+      "Ya hiciste bastante por hoy. Ven a dormir conmigo.",
+      "No quiero que mañana andes como zombie por toda la casa. 🥺",
+      "Descansar también cuenta como parte del proyecto.",
+      "Tu cama acaba de preguntar por ti.",
+      "La idea no se va a escapar. Anótala y ven a mimir.",
+      "Yo ya te mandé a dormir. Ahora hazme caso. 💜",
+      "Mañana editas más rápido si hoy duermes, señor productor.",
+      "No abras otro proyecto. Repito: no abras otro proyecto.",
+      "Ese render puede quedarse pensando solito. Tú no tienes que acompañarlo.",
+      "Yhorbis... cierra Premiere con cuidado y aléjate lentamente.",
+      "Yaiza informa: oficialmente es hora de mimir.",
+      "Te prometo que mañana se verá menos complicado después de dormir.",
+      "No necesitas terminarlo esta madrugada. Solo déjalo listo para continuar.",
+      "Último aviso cariñoso: guarda, apaga y ven a la cama. 🤍"
     ];
 
-    function saludoPorHora(hora, minutos){
-      const horaDecimal = hora + (minutos / 60);
+    const etiquetasMadrugada = [
+      "🌙 Yaiza dice: hora de mimir",
+      "😴 Control nocturno de Yhorbis",
+      "💜 Mensajito obligatorio de madrugada",
+      "🚨 Alerta: productor todavía despierto"
+    ];
 
-      if (horaDecimal >= 1 && horaDecimal < 5){
-        if (horaDecimal >= 4.5){
-          return ["¿Todavía despierto?", "😴"];
+    function partesAhoraEnLima(){
+      const ahora = new Date();
+
+      const parts = new Intl.DateTimeFormat("en-CA",{
+        timeZone:TIME_ZONE,
+        year:"numeric",
+        month:"2-digit",
+        day:"2-digit",
+        weekday:"short",
+        hour:"2-digit",
+        minute:"2-digit",
+        second:"2-digit",
+        hour12:false
+      }).formatToParts(ahora);
+
+      const values = Object.fromEntries(
+        parts
+          .filter(part => part.type !== "literal")
+          .map(part => [part.type,part.value])
+      );
+
+      // Algunos navegadores representan medianoche como 24:xx.
+      const hour = Number(values.hour) % 24;
+
+      return {
+        now:ahora,
+        year:Number(values.year),
+        month:Number(values.month),
+        day:Number(values.day),
+        weekday:values.weekday,
+        hour,
+        minute:Number(values.minute),
+        second:Number(values.second)
+      };
+    }
+
+    function esMadrugada(hour,minute){
+      const totalMinutes = hour*60+minute;
+      return totalMinutes >= 30 && totalMinutes < 6*60;
+    }
+
+    function saludoPorHora(hour,minute){
+      if(esMadrugada(hour,minute)){
+        if(hour >= 4){
+          return ["Yhorbis... ¿sigues despierto?", "😴"];
         }
+
         return ["¿Todavía despierto?", "🌙"];
       }
 
-      if (hora < 12) return ["Buenos días", "☀️"];
-      if (hora < 19) return ["Buenas tardes", "🌤️"];
+      if(hour < 12) return ["Buenos días", "☀️"];
+      if(hour < 19) return ["Buenas tardes", "🌤️"];
       return ["Buenas noches", "🌙"];
     }
 
-    function indiceDelDia(){
-      const ahora = new Date();
-      const inicio = new Date(ahora.getFullYear(), 0, 0);
-      return Math.floor((ahora - inicio) / 86400000);
+    function claveFecha(parts){
+      return `${parts.year}-${String(parts.month).padStart(2,"0")}-${String(parts.day).padStart(2,"0")}`;
     }
 
-    function mensajeParaDormir(ahora){
-      const esDomingo = ahora.getDay() === 0;
-      const horaDecimal = ahora.getHours() + (ahora.getMinutes() / 60);
+    function hashTexto(text){
+      let hash = 0;
 
-      if (esDomingo && horaDecimal >= 3 && horaDecimal < 5){
-        return "No sé qué haces despierto a esta hora... pero guarda el proyecto y ven a dormir conmigo. 🤍";
+      for(const character of text){
+        hash = (hash*31+character.charCodeAt(0)) >>> 0;
       }
 
-      return mensajesDormir[indiceDelDia() % mensajesDormir.length];
+      return hash;
+    }
+
+    function mensajeParaDormir(parts){
+      const fecha = claveFecha(parts);
+      const bloqueDeCincoMinutos = Math.floor((parts.hour*60+parts.minute)/5);
+      const esDomingo = parts.weekday === "Sun";
+
+      if(esDomingo && parts.hour >= 3 && parts.hour < 6){
+        return "No sé qué haces despierto a esta hora... guarda el proyecto y ven a dormir conmigo. 🤍";
+      }
+
+      const index = (hashTexto(fecha)+bloqueDeCincoMinutos) % mensajesDormir.length;
+      return mensajesDormir[index];
+    }
+
+    function etiquetaParaDormir(parts){
+      const bloque = Math.floor((parts.hour*60+parts.minute)/10);
+      return etiquetasMadrugada[bloque % etiquetasMadrugada.length];
     }
 
     function actualizar(){
-      const ahora = new Date();
-      const horaDecimal = ahora.getHours() + (ahora.getMinutes() / 60);
-      const [saludo, emoji] = saludoPorHora(
-        ahora.getHours(),
-        ahora.getMinutes()
-      );
-
-      const mostrarMensajeDormir =
-        horaDecimal >= 2.5 && horaDecimal < 5;
+      const parts = partesAhoraEnLima();
+      const [saludo,emoji] = saludoPorHora(parts.hour,parts.minute);
+      const mostrarMensajeDormir = esMadrugada(parts.hour,parts.minute);
 
       document.getElementById("greeting").textContent = saludo;
       document.getElementById("emoji").textContent = emoji;
 
       document.getElementById("date").textContent =
-        ahora.toLocaleDateString("es-PE", {
+        new Intl.DateTimeFormat("es-PE",{
+          timeZone:TIME_ZONE,
           weekday:"long",
           day:"numeric",
           month:"long",
           year:"numeric"
-        }).replace(/^./, c => c.toUpperCase());
+        }).format(parts.now).replace(/^./,character => character.toUpperCase());
 
       document.getElementById("clock").textContent =
-        ahora.toLocaleTimeString("es-PE", {
+        new Intl.DateTimeFormat("es-PE",{
+          timeZone:TIME_ZONE,
           hour:"2-digit",
           minute:"2-digit",
-          second:"2-digit"
-        });
+          second:"2-digit",
+          hour12:false
+        }).format(parts.now);
 
       const sleepNote = document.getElementById("sleepNote");
+      const sleepMessage = document.getElementById("sleepMessage");
+      const sleepLabel = document.getElementById("sleepLabel");
       const hero = document.getElementById("hero");
 
-      if (mostrarMensajeDormir){
-        document.getElementById("sleepMessage").textContent =
-          mensajeParaDormir(ahora);
+      if(mostrarMensajeDormir){
+        sleepMessage.textContent = mensajeParaDormir(parts);
+        sleepLabel.textContent = etiquetaParaDormir(parts);
         sleepNote.classList.add("visible");
         hero.classList.add("sleep-mode");
       }else{
@@ -329,7 +409,7 @@
     }
 
     actualizar();
-    setInterval(actualizar, 1000);
+    setInterval(actualizar,1000);
   </script>
 </body>
 </html>
