@@ -10,8 +10,12 @@
     :root{
       --text:#f8f5fc;
       --muted:#a49aad;
+      --muted-2:#786d81;
       --purple:#a855f7;
+      --purple-2:#7c3aed;
       --purple-soft:#e0c4ff;
+      --red:#ff91a0;
+      --green:#91e4c2;
       --line:rgba(198,150,255,.19);
       --accent-rgb:168,85,247;
     }
@@ -32,7 +36,11 @@
       padding:6px;
     }
 
-    button,a{font:inherit}
+    button,
+    input,
+    a{font:inherit}
+
+    button{touch-action:manipulation}
 
     .player{
       position:relative;
@@ -92,23 +100,158 @@
       letter-spacing:-.045em;
     }
 
-    .primary{
+    .primary,
+    .secondary,
+    .icon-button{
       min-height:40px;
+      border-radius:12px;
+      cursor:pointer;
+      font-weight:760;
+      transition:transform .2s ease,background .2s ease,border-color .2s ease;
+    }
+
+    .primary{
       padding:0 15px;
       border:1px solid rgba(var(--accent-rgb),.38);
-      border-radius:12px;
       color:#fff8ff;
       background:linear-gradient(145deg,rgba(var(--accent-rgb),.29),rgba(var(--accent-rgb),.1));
       box-shadow:0 0 20px rgba(var(--accent-rgb),.1);
-      font-weight:760;
       text-decoration:none;
-      cursor:pointer;
-      transition:transform .2s ease,background .2s ease;
+    }
+
+    .secondary{
+      padding:0 13px;
+      border:1px solid rgba(255,255,255,.085);
+      color:var(--muted);
+      background:rgba(255,255,255,.035);
+    }
+
+    .primary:hover,
+    .secondary:hover,
+    .icon-button:hover{
+      transform:translateY(-1px);
     }
 
     .primary:hover{
-      transform:translateY(-1px);
       background:linear-gradient(145deg,rgba(var(--accent-rgb),.37),rgba(var(--accent-rgb),.14));
+    }
+
+    .icon-button{
+      display:grid;
+      place-items:center;
+      width:34px;
+      min-height:34px;
+      padding:0;
+      border:1px solid rgba(255,255,255,.07);
+      color:var(--muted-2);
+      background:rgba(255,255,255,.025);
+      font-size:1rem;
+    }
+
+    .setup-view{
+      min-height:132px;
+      display:grid;
+      grid-template-columns:auto minmax(0,1fr);
+      align-items:center;
+      gap:18px 21px;
+    }
+
+    .setup-icon,
+    .mini-icon,
+    .idle-symbol{
+      display:grid;
+      place-items:center;
+      width:57px;
+      height:57px;
+      border:1px solid rgba(224,196,255,.26);
+      border-radius:18px;
+      color:var(--purple-soft);
+      background:linear-gradient(145deg,rgba(168,85,247,.22),rgba(168,85,247,.05));
+      box-shadow:0 0 22px rgba(168,85,247,.14);
+      font-size:1.38rem;
+    }
+
+    .setup-copy h1,
+    .connect-copy h1,
+    .idle-view h1,
+    .error-view h1{
+      font-size:clamp(1.25rem,2.6vw,2rem);
+    }
+
+    .setup-copy > p:last-of-type,
+    .connect-copy p:last-child,
+    .idle-view p:last-child,
+    .error-view p:last-child{
+      margin:5px 0 0;
+      color:var(--muted);
+      font-size:.84rem;
+      line-height:1.45;
+    }
+
+    .setup-form{
+      grid-column:1 / -1;
+      display:grid;
+      grid-template-columns:minmax(0,1fr) auto;
+      gap:8px;
+    }
+
+    .client-input{
+      min-width:0;
+      height:42px;
+      padding:0 13px;
+      border:1px solid rgba(224,196,255,.14);
+      border-radius:12px;
+      outline:none;
+      color:var(--text);
+      background:rgba(4,3,7,.42);
+      font-size:.75rem;
+    }
+
+    .client-input:focus{
+      border-color:rgba(198,150,255,.42);
+      box-shadow:0 0 0 3px rgba(168,85,247,.08);
+    }
+
+    .setup-help{
+      grid-column:1 / -1;
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap:13px;
+      padding-top:2px;
+    }
+
+    .redirect-copy{
+      min-width:0;
+      color:var(--muted-2);
+      font-size:.57rem;
+      line-height:1.45;
+    }
+
+    .redirect-copy strong{
+      display:block;
+      margin-bottom:2px;
+      color:var(--muted);
+      font-weight:760;
+    }
+
+    .redirect-url{
+      display:block;
+      overflow:hidden;
+      max-width:650px;
+      text-overflow:ellipsis;
+      white-space:nowrap;
+    }
+
+    .copy-link{
+      flex:0 0 auto;
+      padding:0;
+      border:0;
+      color:var(--purple-soft);
+      background:transparent;
+      cursor:pointer;
+      font-size:.57rem;
+      font-weight:800;
     }
 
     .connect-view,
@@ -119,34 +262,6 @@
       grid-template-columns:auto minmax(0,1fr) auto;
       align-items:center;
       gap:18px;
-    }
-
-    .mini-icon,
-    .idle-symbol{
-      display:grid;
-      place-items:center;
-      width:54px;
-      height:54px;
-      border:1px solid rgba(224,196,255,.26);
-      border-radius:17px;
-      color:var(--purple-soft);
-      background:linear-gradient(145deg,rgba(168,85,247,.22),rgba(168,85,247,.05));
-      box-shadow:0 0 22px rgba(168,85,247,.14);
-      font-size:1.35rem;
-    }
-
-    .connect-copy h1,
-    .idle-view h1,
-    .error-view h1{
-      font-size:clamp(1.25rem,2.6vw,2rem);
-    }
-
-    .connect-copy p:last-child,
-    .idle-view p:last-child,
-    .error-view p:last-child{
-      margin:5px 0 0;
-      color:var(--muted);
-      font-size:.86rem;
     }
 
     .music-view{
@@ -216,11 +331,27 @@
       gap:16px;
     }
 
+    .account-line{
+      display:flex;
+      align-items:center;
+      gap:7px;
+      min-width:0;
+    }
+
+    .account-dot{
+      width:6px;
+      height:6px;
+      flex:0 0 auto;
+      border-radius:50%;
+      background:var(--green);
+      box-shadow:0 0 9px rgba(145,228,194,.6);
+    }
+
     .device{
       margin:0;
       overflow:hidden;
-      color:#7e7187;
-      font-size:.68rem;
+      color:#87798f;
+      font-size:.66rem;
       text-overflow:ellipsis;
       white-space:nowrap;
     }
@@ -291,11 +422,16 @@
       font-size:.64rem;
     }
 
+    .right-actions{
+      display:flex;
+      align-items:center;
+      gap:7px;
+    }
+
     .open-button{
       display:inline-flex;
       align-items:center;
       justify-content:center;
-      margin-right:4px;
       white-space:nowrap;
     }
 
@@ -323,6 +459,46 @@
     .loading span:nth-child(2){animation-delay:.2s}
     .loading span:nth-child(3){animation-delay:.4s}
 
+    .auth-status{
+      min-height:150px;
+      display:grid;
+      place-items:center;
+      padding:24px;
+      color:var(--muted);
+      text-align:center;
+    }
+
+    .auth-status strong{
+      display:block;
+      margin-bottom:6px;
+      color:var(--text);
+      font-size:1.1rem;
+    }
+
+    .toast{
+      position:absolute;
+      left:50%;
+      bottom:10px;
+      z-index:8;
+      opacity:0;
+      pointer-events:none;
+      padding:8px 12px;
+      border:1px solid rgba(224,196,255,.15);
+      border-radius:999px;
+      color:var(--purple-soft);
+      background:rgba(10,7,13,.93);
+      box-shadow:0 12px 30px rgba(0,0,0,.28);
+      font-size:.58rem;
+      font-weight:780;
+      transform:translate(-50%,8px);
+      transition:opacity .2s ease,transform .2s ease;
+    }
+
+    .toast.show{
+      opacity:1;
+      transform:translate(-50%,0);
+    }
+
     @keyframes spin{to{transform:rotate(360deg)}}
     @keyframes eq{to{height:100%}}
     @keyframes dots{to{transform:translateY(-7px);opacity:.45}}
@@ -341,11 +517,12 @@
       .vinyl{width:86px;height:86px}
       .halo{width:82px;height:82px}
 
-      .open-button{
+      .right-actions{
         grid-column:1 / -1;
         width:100%;
-        margin:0;
       }
+
+      .open-button{flex:1}
 
       .connect-view,
       .idle-view,
@@ -360,13 +537,32 @@
       }
     }
 
-    @media(max-width:440px){
+    @media(max-width:520px){
       body{padding:3px}
 
       .player{
         min-height:232px;
         padding:18px 16px;
         border-radius:20px;
+      }
+
+      .setup-view{
+        grid-template-columns:47px minmax(0,1fr);
+        gap:14px;
+      }
+
+      .setup-icon{
+        width:47px;
+        height:47px;
+        border-radius:15px;
+      }
+
+      .setup-form{grid-template-columns:1fr}
+      .setup-form .primary{width:100%}
+
+      .setup-help{
+        align-items:flex-start;
+        flex-direction:column;
       }
 
       .music-view{
@@ -397,12 +593,48 @@
     <div class="backdrop" id="backdrop"></div>
     <div class="noise"></div>
 
+    <section class="setup-view hidden" id="setupView">
+      <div class="setup-icon">♫</div>
+
+      <div class="setup-copy">
+        <p class="eyebrow">CUENTA DE YHORBIS</p>
+        <h1>Conecta su Spotify.</h1>
+        <p>Este widget ya no usa la sesión de Kanelista. Se vincula con la cuenta que Yhorbis autorice.</p>
+      </div>
+
+      <div class="setup-form">
+        <input
+          class="client-input"
+          id="clientIdInput"
+          type="text"
+          inputmode="text"
+          autocomplete="off"
+          spellcheck="false"
+          placeholder="Pega aquí el Client ID de Spotify"
+          aria-label="Client ID de Spotify"
+        >
+        <button class="primary" id="saveAndConnectButton" type="button">
+          Guardar y conectar
+        </button>
+
+        <div class="setup-help">
+          <div class="redirect-copy">
+            <strong>Redirect URI para Spotify Developer Dashboard</strong>
+            <span class="redirect-url" id="redirectUriLabel"></span>
+          </div>
+          <button class="copy-link" id="copyRedirectButton" type="button">
+            Copiar URI
+          </button>
+        </div>
+      </div>
+    </section>
+
     <section class="connect-view hidden" id="connectView">
       <div class="mini-icon">♫</div>
       <div class="connect-copy">
-        <p class="eyebrow">YHORBIS NOW PLAYING</p>
-        <h1>Conecta tu Spotify</h1>
-        <p>Tu canción actual aparecerá aquí.</p>
+        <p class="eyebrow">CUENTA DE YHORBIS</p>
+        <h1>Autoriza su Spotify</h1>
+        <p id="connectText">Inicia sesión con la cuenta de Yhorbis, no con la tuya.</p>
       </div>
       <button class="primary" id="connectButton" type="button">Conectar</button>
     </section>
@@ -420,8 +652,12 @@
         <div class="topline">
           <div>
             <p class="eyebrow" id="statusLabel">NOW PLAYING</p>
-            <p class="device" id="deviceLabel">Spotify</p>
+            <div class="account-line">
+              <span class="account-dot"></span>
+              <p class="device" id="deviceLabel">Spotify de Yhorbis</p>
+            </div>
           </div>
+
           <div class="equalizer" id="equalizer" aria-label="Reproduciendo">
             <span></span><span></span><span></span><span></span>
           </div>
@@ -443,18 +679,22 @@
         </div>
       </div>
 
-      <a class="primary open-button" id="spotifyLink" href="https://open.spotify.com/" target="_blank" rel="noopener">
-        Abrir Spotify ↗
-      </a>
+      <div class="right-actions">
+        <a class="primary open-button" id="spotifyLink" href="https://open.spotify.com/" target="_blank" rel="noopener">
+          Abrir Spotify ↗
+        </a>
+        <button class="icon-button" id="disconnectButton" type="button" title="Cambiar cuenta" aria-label="Cambiar cuenta">×</button>
+      </div>
     </section>
 
     <section class="idle-view hidden" id="idleView">
       <div class="idle-symbol">✦</div>
       <div>
-        <p class="eyebrow">SPOTIFY EN PAUSA</p>
+        <p class="eyebrow">SPOTIFY DE YHORBIS</p>
         <h1>El silencio también tiene ritmo.</h1>
-        <p id="idleText">Pon una canción y aparecerá aquí.</p>
+        <p id="idleText">Pon una canción en su cuenta y aparecerá aquí.</p>
       </div>
+      <button class="icon-button" id="idleDisconnectButton" type="button" title="Cambiar cuenta" aria-label="Cambiar cuenta">×</button>
     </section>
 
     <section class="error-view hidden" id="errorView">
@@ -467,215 +707,727 @@
       <button class="primary" id="retryButton" type="button">Reintentar</button>
     </section>
 
-    <div class="loading" id="loading" aria-label="Cargando">
+    <section class="auth-status hidden" id="authStatus">
+      <div>
+        <strong id="authStatusTitle">Conectando Spotify…</strong>
+        <span id="authStatusText">No cierres esta ventana todavía.</span>
+      </div>
+    </section>
+
+    <div class="loading hidden" id="loading" aria-label="Cargando">
       <span></span><span></span><span></span>
     </div>
+
+    <div class="toast" id="toast">Listo</div>
   </main>
 
   <script>
-    const WORKER_URL = "https://aged-cell-ee03.rigivaldi.workers.dev";
-    const NOW_PLAYING_URL = `${WORKER_URL}/now-playing`;
+    (() => {
+      "use strict";
 
-    const $ = id => document.getElementById(id);
+      const CLIENT_ID_KEY = "yhorbis_spotify_client_id_v1";
+      const AUTH_KEY = "yhorbis_spotify_auth_v1";
+      const PKCE_VERIFIER_KEY = "yhorbis_spotify_pkce_verifier";
+      const PKCE_STATE_KEY = "yhorbis_spotify_pkce_state";
+      const PKCE_CLIENT_KEY = "yhorbis_spotify_pkce_client";
+      const SCOPES = [
+        "user-read-currently-playing",
+        "user-read-playback-state",
+        "user-read-private"
+      ].join(" ");
 
-    const ui = {
-      connectView:$("connectView"),
-      musicView:$("musicView"),
-      idleView:$("idleView"),
-      errorView:$("errorView"),
-      loading:$("loading"),
-      connectButton:$("connectButton"),
-      retryButton:$("retryButton"),
-      albumArt:$("albumArt"),
-      backdrop:$("backdrop"),
-      vinyl:$("vinyl"),
-      equalizer:$("equalizer"),
-      statusLabel:$("statusLabel"),
-      deviceLabel:$("deviceLabel"),
-      trackName:$("trackName"),
-      artistName:$("artistName"),
-      progressFill:$("progressFill"),
-      elapsed:$("elapsed"),
-      duration:$("duration"),
-      spotifyLink:$("spotifyLink"),
-      idleText:$("idleText"),
-      errorTitle:$("errorTitle"),
-      errorMessage:$("errorMessage")
-    };
+      const $ = id => document.getElementById(id);
 
-    let playback=null;
-    let progressTimer=null;
-    let pollingTimer=null;
+      const ui = {
+        setupView:$("setupView"),
+        connectView:$("connectView"),
+        musicView:$("musicView"),
+        idleView:$("idleView"),
+        errorView:$("errorView"),
+        authStatus:$("authStatus"),
+        loading:$("loading"),
+        clientIdInput:$("clientIdInput"),
+        saveAndConnectButton:$("saveAndConnectButton"),
+        redirectUriLabel:$("redirectUriLabel"),
+        copyRedirectButton:$("copyRedirectButton"),
+        connectButton:$("connectButton"),
+        connectText:$("connectText"),
+        retryButton:$("retryButton"),
+        disconnectButton:$("disconnectButton"),
+        idleDisconnectButton:$("idleDisconnectButton"),
+        albumArt:$("albumArt"),
+        backdrop:$("backdrop"),
+        vinyl:$("vinyl"),
+        equalizer:$("equalizer"),
+        statusLabel:$("statusLabel"),
+        deviceLabel:$("deviceLabel"),
+        trackName:$("trackName"),
+        artistName:$("artistName"),
+        progressFill:$("progressFill"),
+        elapsed:$("elapsed"),
+        duration:$("duration"),
+        spotifyLink:$("spotifyLink"),
+        idleText:$("idleText"),
+        errorTitle:$("errorTitle"),
+        errorMessage:$("errorMessage"),
+        authStatusTitle:$("authStatusTitle"),
+        authStatusText:$("authStatusText"),
+        toast:$("toast")
+      };
 
-    function show(name){
-      ["connectView","musicView","idleView","errorView"].forEach(key=>{
-        ui[key]?.classList.toggle("hidden",key!==name);
-      });
-    }
+      const cleanUrl = new URL(window.location.href);
+      cleanUrl.search = "";
+      cleanUrl.hash = "";
+      const REDIRECT_URI = cleanUrl.href;
 
-    function setLoading(value){
-      ui.loading?.classList.toggle("hidden",!value);
-    }
+      let playback = null;
+      let progressTimer = null;
+      let pollingTimer = null;
+      let toastTimer = null;
+      let refreshPromise = null;
 
-    function formatTime(milliseconds=0){
-      const total=Math.max(0,Math.floor(milliseconds/1000));
-      const minutes=Math.floor(total/60);
-      const seconds=String(total%60).padStart(2,"0");
-      return `${minutes}:${seconds}`;
-    }
-
-    function updateProgress(){
-      if(!playback?.item)return;
-
-      const elapsedSinceFetch=playback.playing
-        ? Date.now()-playback.fetchedAt
-        : 0;
-
-      const position=Math.min(
-        playback.item.duration_ms,
-        playback.progress_ms+elapsedSinceFetch
-      );
-
-      const percentage=playback.item.duration_ms
-        ? (position/playback.item.duration_ms)*100
-        : 0;
-
-      ui.progressFill.style.width=`${percentage}%`;
-      ui.elapsed.textContent=formatTime(position);
-      ui.duration.textContent=formatTime(playback.item.duration_ms);
-    }
-
-    function startProgressTimer(){
-      clearInterval(progressTimer);
-      updateProgress();
-      progressTimer=setInterval(updateProgress,1000);
-    }
-
-    function renderPlayback(data){
-      playback={...data,fetchedAt:Date.now()};
-      const item=data.item;
-
-      ui.trackName.textContent=item.name||"Sin título";
-      ui.artistName.textContent=item.artists||"Spotify";
-      ui.statusLabel.textContent=data.playing?"NOW PLAYING":"PAUSED";
-      ui.deviceLabel.textContent=data.device?.name||"Spotify";
-      ui.spotifyLink.href=item.url||"https://open.spotify.com/";
-
-      if(item.image){
-        ui.albumArt.src=item.image;
-        ui.albumArt.alt=`Portada de ${item.name||"la canción"}`;
-        ui.backdrop.style.backgroundImage=`url("${item.image}")`;
-      }else{
-        ui.albumArt.removeAttribute("src");
-        ui.backdrop.style.backgroundImage="none";
+      function currentClientId(){
+        return localStorage.getItem(CLIENT_ID_KEY)?.trim() || "";
       }
 
-      ui.vinyl.classList.toggle("playing",data.playing);
-      ui.equalizer.classList.toggle("playing",data.playing);
-      ui.equalizer.setAttribute(
-        "aria-label",
-        data.playing?"Reproduciendo":"En pausa"
-      );
-
-      show("musicView");
-      startProgressTimer();
-    }
-
-    function renderIdle(message="Pon una canción y aparecerá aquí."){
-      playback=null;
-      clearInterval(progressTimer);
-      ui.idleText.textContent=message;
-      ui.backdrop.style.backgroundImage="none";
-      ui.vinyl?.classList.remove("playing");
-      ui.equalizer?.classList.remove("playing");
-      show("idleView");
-    }
-
-    function renderError(error){
-      playback=null;
-      clearInterval(progressTimer);
-
-      const message=error?.message||"Vuelve a intentarlo en un momento.";
-
-      if(message.includes("conectado")){
-        ui.errorTitle.textContent="Spotify todavía no está conectado.";
-        ui.errorMessage.textContent="Abre la conexión una vez y luego vuelve al widget.";
-        show("connectView");
-        return;
+      function readAuth(){
+        try{
+          const value = JSON.parse(localStorage.getItem(AUTH_KEY) || "null");
+          return value && typeof value === "object" ? value : null;
+        }catch{
+          return null;
+        }
       }
 
-      ui.errorTitle.textContent="No pudimos consultar Spotify.";
-      ui.errorMessage.textContent=message;
-      show("errorView");
-    }
+      function saveAuth(auth){
+        localStorage.setItem(AUTH_KEY, JSON.stringify(auth));
+      }
 
-    async function fetchPlayback({silent=false}={}){
-      if(!silent)setLoading(true);
+      function clearAuth({keepClientId=true}={}){
+        localStorage.removeItem(AUTH_KEY);
 
-      try{
-        const response=await fetch(`${NOW_PLAYING_URL}?t=${Date.now()}`,{
-          method:"GET",
-          headers:{Accept:"application/json"},
-          cache:"no-store"
+        if(!keepClientId){
+          localStorage.removeItem(CLIENT_ID_KEY);
+        }
+
+        playback = null;
+        clearInterval(progressTimer);
+        clearInterval(pollingTimer);
+        ui.backdrop.style.backgroundImage = "none";
+      }
+
+      function show(name){
+        [
+          "setupView",
+          "connectView",
+          "musicView",
+          "idleView",
+          "errorView",
+          "authStatus"
+        ].forEach(key => {
+          ui[key]?.classList.toggle("hidden", key !== name);
         });
+      }
 
-        const data=await response.json();
+      function setLoading(value){
+        ui.loading?.classList.toggle("hidden", !value);
+      }
 
-        if(!response.ok){
-          throw new Error(
-            data.error||`El servidor respondió con el error ${response.status}.`
-          );
+      function showToast(text){
+        ui.toast.textContent = text;
+        ui.toast.classList.add("show");
+        clearTimeout(toastTimer);
+        toastTimer = setTimeout(() => ui.toast.classList.remove("show"), 1600);
+      }
+
+      async function copyText(text){
+        try{
+          await navigator.clipboard.writeText(text);
+        }catch{
+          const area = document.createElement("textarea");
+          area.value = text;
+          area.style.position = "fixed";
+          area.style.opacity = "0";
+          document.body.appendChild(area);
+          area.select();
+          document.execCommand("copy");
+          area.remove();
         }
+      }
 
-        if(!data.connected){
-          throw new Error("Spotify todavía no está conectado al Worker.");
-        }
+      function formatTime(milliseconds=0){
+        const total = Math.max(0, Math.floor(milliseconds / 1000));
+        const minutes = Math.floor(total / 60);
+        const seconds = String(total % 60).padStart(2,"0");
+        return `${minutes}:${seconds}`;
+      }
 
-        if(!data.item){
-          renderIdle("No hay una canción activa en Spotify.");
+      function randomString(length=64){
+        const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-._~";
+        const values = crypto.getRandomValues(new Uint8Array(length));
+        return [...values].map(value => alphabet[value % alphabet.length]).join("");
+      }
+
+      function base64Url(bytes){
+        let binary = "";
+        bytes.forEach(byte => binary += String.fromCharCode(byte));
+
+        return btoa(binary)
+          .replace(/\+/g,"-")
+          .replace(/\//g,"_")
+          .replace(/=+$/,"");
+      }
+
+      async function codeChallenge(verifier){
+        const data = new TextEncoder().encode(verifier);
+        const digest = await crypto.subtle.digest("SHA-256", data);
+        return base64Url(new Uint8Array(digest));
+      }
+
+      function validateClientId(value){
+        return /^[A-Za-z0-9]{16,64}$/.test(value);
+      }
+
+      async function beginPopupAuthorization(){
+        const clientId = currentClientId();
+
+        if(!validateClientId(clientId)){
+          show("setupView");
+          ui.clientIdInput.focus();
+          showToast("Falta un Client ID válido");
           return;
         }
 
-        renderPlayback(data);
-      }catch(error){
-        console.error(error);
-        renderError(error);
-      }finally{
-        setLoading(false);
+        const authUrl = new URL(REDIRECT_URI);
+        authUrl.searchParams.set("auth","start");
+        authUrl.searchParams.set("client_id",clientId);
+
+        const width = 520;
+        const height = 720;
+        const left = Math.max(0, (window.screen.width - width) / 2);
+        const top = Math.max(0, (window.screen.height - height) / 2);
+
+        const popup = window.open(
+          authUrl.href,
+          "yhorbis-spotify-auth",
+          `popup=yes,width=${width},height=${height},left=${left},top=${top}`
+        );
+
+        if(!popup){
+          showToast("El navegador bloqueó la ventana de Spotify");
+          return;
+        }
+
+        ui.connectText.textContent = "Esperando a que Yhorbis autorice su cuenta…";
       }
-    }
 
-    function startPolling(){
-      clearInterval(pollingTimer);
+      async function runAuthPopupStart(){
+        const params = new URLSearchParams(window.location.search);
+        const clientId = params.get("client_id")?.trim() || "";
 
-      pollingTimer=setInterval(()=>{
-        if(!document.hidden){
+        show("authStatus");
+
+        if(!validateClientId(clientId)){
+          throw new Error("El Client ID recibido no es válido.");
+        }
+
+        const verifier = randomString(72);
+        const state = randomString(36);
+        const challenge = await codeChallenge(verifier);
+
+        sessionStorage.setItem(PKCE_VERIFIER_KEY,verifier);
+        sessionStorage.setItem(PKCE_STATE_KEY,state);
+        sessionStorage.setItem(PKCE_CLIENT_KEY,clientId);
+
+        const authorizeUrl = new URL("https://accounts.spotify.com/authorize");
+        authorizeUrl.searchParams.set("client_id",clientId);
+        authorizeUrl.searchParams.set("response_type","code");
+        authorizeUrl.searchParams.set("redirect_uri",REDIRECT_URI);
+        authorizeUrl.searchParams.set("scope",SCOPES);
+        authorizeUrl.searchParams.set("state",state);
+        authorizeUrl.searchParams.set("code_challenge_method","S256");
+        authorizeUrl.searchParams.set("code_challenge",challenge);
+        authorizeUrl.searchParams.set("show_dialog","true");
+
+        window.location.replace(authorizeUrl.href);
+      }
+
+      async function exchangeAuthorizationCode(code,state){
+        show("authStatus");
+        ui.authStatusTitle.textContent = "Verificando la cuenta…";
+        ui.authStatusText.textContent = "Un momento, ya casi queda vinculada.";
+
+        const verifier = sessionStorage.getItem(PKCE_VERIFIER_KEY);
+        const expectedState = sessionStorage.getItem(PKCE_STATE_KEY);
+        const clientId = sessionStorage.getItem(PKCE_CLIENT_KEY);
+
+        if(!verifier || !clientId){
+          throw new Error("La sesión de autorización se perdió. Vuelve a conectar Spotify.");
+        }
+
+        if(!state || state !== expectedState){
+          throw new Error("Spotify devolvió una sesión que no coincide.");
+        }
+
+        const tokenResponse = await fetch("https://accounts.spotify.com/api/token",{
+          method:"POST",
+          headers:{
+            "Content-Type":"application/x-www-form-urlencoded"
+          },
+          body:new URLSearchParams({
+            grant_type:"authorization_code",
+            code,
+            redirect_uri:REDIRECT_URI,
+            client_id:clientId,
+            code_verifier:verifier
+          })
+        });
+
+        const tokenData = await tokenResponse.json();
+
+        if(!tokenResponse.ok){
+          throw new Error(tokenData.error_description || tokenData.error || "No se pudo obtener el acceso a Spotify.");
+        }
+
+        const profileResponse = await fetch("https://api.spotify.com/v1/me",{
+          headers:{
+            Authorization:`Bearer ${tokenData.access_token}`
+          }
+        });
+
+        const profile = profileResponse.ok
+          ? await profileResponse.json()
+          : null;
+
+        const auth = {
+          access_token:tokenData.access_token,
+          refresh_token:tokenData.refresh_token,
+          expires_at:Date.now() + (Number(tokenData.expires_in || 3600) * 1000),
+          profile:{
+            account_id:profile?.account_id || "",
+            display_name:profile?.display_name || "Yhorbis",
+            id:profile?.id || ""
+          }
+        };
+
+        sessionStorage.removeItem(PKCE_VERIFIER_KEY);
+        sessionStorage.removeItem(PKCE_STATE_KEY);
+        sessionStorage.removeItem(PKCE_CLIENT_KEY);
+
+        localStorage.setItem(CLIENT_ID_KEY,clientId);
+        saveAuth(auth);
+
+        const payload = {
+          type:"yhorbis-spotify-auth-success",
+          clientId,
+          auth
+        };
+
+        if(window.opener && !window.opener.closed){
+          window.opener.postMessage(payload,window.location.origin);
+          ui.authStatusTitle.textContent = "Spotify conectado";
+          ui.authStatusText.textContent = `Cuenta autorizada: ${auth.profile.display_name}.`;
+          setTimeout(() => window.close(),650);
+        }else{
+          history.replaceState({},document.title,REDIRECT_URI);
+          await initializeMainWidget();
+        }
+      }
+
+      function authIsExpiring(auth){
+        return !auth?.access_token || Number(auth.expires_at || 0) <= Date.now() + 60_000;
+      }
+
+      async function refreshAccessToken(){
+        if(refreshPromise) return refreshPromise;
+
+        refreshPromise = (async () => {
+          const auth = readAuth();
+          const clientId = currentClientId();
+
+          if(!auth?.refresh_token || !validateClientId(clientId)){
+            throw new Error("Spotify necesita volver a conectarse.");
+          }
+
+          const response = await fetch("https://accounts.spotify.com/api/token",{
+            method:"POST",
+            headers:{
+              "Content-Type":"application/x-www-form-urlencoded"
+            },
+            body:new URLSearchParams({
+              grant_type:"refresh_token",
+              refresh_token:auth.refresh_token,
+              client_id:clientId
+            })
+          });
+
+          const data = await response.json();
+
+          if(!response.ok){
+            if(data.error === "invalid_grant"){
+              clearAuth({keepClientId:true});
+              throw new Error("La autorización venció. Conecta otra vez la cuenta de Yhorbis.");
+            }
+
+            throw new Error(data.error_description || data.error || "No se pudo renovar Spotify.");
+          }
+
+          const nextAuth = {
+            ...auth,
+            access_token:data.access_token,
+            refresh_token:data.refresh_token || auth.refresh_token,
+            expires_at:Date.now() + (Number(data.expires_in || 3600) * 1000)
+          };
+
+          saveAuth(nextAuth);
+          return nextAuth;
+        })();
+
+        try{
+          return await refreshPromise;
+        }finally{
+          refreshPromise = null;
+        }
+      }
+
+      async function validAccessToken(){
+        let auth = readAuth();
+
+        if(!auth){
+          throw new Error("Spotify todavía no está conectado.");
+        }
+
+        if(authIsExpiring(auth)){
+          auth = await refreshAccessToken();
+        }
+
+        return auth.access_token;
+      }
+
+      async function spotifyFetch(url,{retry=true}={}){
+        const token = await validAccessToken();
+        const response = await fetch(url,{
+          headers:{
+            Authorization:`Bearer ${token}`,
+            Accept:"application/json"
+          },
+          cache:"no-store"
+        });
+
+        if(response.status === 401 && retry){
+          await refreshAccessToken();
+          return spotifyFetch(url,{retry:false});
+        }
+
+        return response;
+      }
+
+      function updateProgress(){
+        if(!playback?.item) return;
+
+        const elapsedSinceFetch = playback.playing
+          ? Date.now() - playback.fetchedAt
+          : 0;
+
+        const position = Math.min(
+          playback.item.duration_ms,
+          playback.progress_ms + elapsedSinceFetch
+        );
+
+        const percentage = playback.item.duration_ms
+          ? (position / playback.item.duration_ms) * 100
+          : 0;
+
+        ui.progressFill.style.width = `${percentage}%`;
+        ui.elapsed.textContent = formatTime(position);
+        ui.duration.textContent = formatTime(playback.item.duration_ms);
+      }
+
+      function startProgressTimer(){
+        clearInterval(progressTimer);
+        updateProgress();
+        progressTimer = setInterval(updateProgress,1000);
+      }
+
+      function normalizePlayback(data){
+        const item = data.item;
+
+        if(!item) return null;
+
+        const isEpisode = item.type === "episode";
+        const artists = isEpisode
+          ? (item.show?.name || "Podcast")
+          : (item.artists || []).map(artist => artist.name).join(", ");
+
+        const images = isEpisode
+          ? (item.images || item.show?.images || [])
+          : (item.album?.images || []);
+
+        return {
+          playing:Boolean(data.is_playing),
+          progress_ms:Number(data.progress_ms || 0),
+          device:data.device?.name || "Spotify",
+          item:{
+            name:item.name || "Sin título",
+            artists:artists || "Spotify",
+            duration_ms:Number(item.duration_ms || 0),
+            image:images[0]?.url || "",
+            url:item.external_urls?.spotify || "https://open.spotify.com/"
+          }
+        };
+      }
+
+      function connectedAccountName(){
+        return readAuth()?.profile?.display_name || "Yhorbis";
+      }
+
+      function renderPlayback(data){
+        playback = {
+          ...data,
+          fetchedAt:Date.now()
+        };
+
+        const item = data.item;
+        const accountName = connectedAccountName();
+
+        ui.trackName.textContent = item.name;
+        ui.artistName.textContent = item.artists;
+        ui.statusLabel.textContent = data.playing ? "NOW PLAYING" : "PAUSED";
+        ui.deviceLabel.textContent = `${accountName} · ${data.device}`;
+        ui.spotifyLink.href = item.url;
+
+        if(item.image){
+          ui.albumArt.src = item.image;
+          ui.albumArt.alt = `Portada de ${item.name}`;
+          ui.backdrop.style.backgroundImage = `url("${item.image}")`;
+        }else{
+          ui.albumArt.removeAttribute("src");
+          ui.backdrop.style.backgroundImage = "none";
+        }
+
+        ui.vinyl.classList.toggle("playing",data.playing);
+        ui.equalizer.classList.toggle("playing",data.playing);
+        ui.equalizer.setAttribute(
+          "aria-label",
+          data.playing ? "Reproduciendo" : "En pausa"
+        );
+
+        show("musicView");
+        startProgressTimer();
+      }
+
+      function renderIdle(message="Pon una canción en su cuenta y aparecerá aquí."){
+        playback = null;
+        clearInterval(progressTimer);
+        ui.idleText.textContent = `${connectedAccountName()}: ${message}`;
+        ui.backdrop.style.backgroundImage = "none";
+        ui.vinyl?.classList.remove("playing");
+        ui.equalizer?.classList.remove("playing");
+        show("idleView");
+      }
+
+      function renderError(error){
+        playback = null;
+        clearInterval(progressTimer);
+
+        const message = error?.message || "Vuelve a intentarlo en un momento.";
+
+        if(message.includes("volver a conectarse") || message.includes("autorización venció")){
+          ui.connectText.textContent = message;
+          show("connectView");
+          return;
+        }
+
+        ui.errorTitle.textContent = "No pudimos consultar Spotify.";
+        ui.errorMessage.textContent = message;
+        show("errorView");
+      }
+
+      async function fetchPlayback({silent=false}={}){
+        if(!silent) setLoading(true);
+
+        try{
+          const response = await spotifyFetch(
+            "https://api.spotify.com/v1/me/player?additional_types=track,episode"
+          );
+
+          if(response.status === 204){
+            renderIdle("no hay una reproducción activa.");
+            return;
+          }
+
+          if(response.status === 403){
+            throw new Error(
+              "Esta cuenta no está autorizada en la app de Spotify. Añade a Yhorbis en Users Management o usa una app creada por él."
+            );
+          }
+
+          if(response.status === 429){
+            throw new Error("Spotify pidió esperar un momento antes de volver a consultar.");
+          }
+
+          const data = await response.json();
+
+          if(!response.ok){
+            throw new Error(data.error?.message || `Spotify respondió ${response.status}.`);
+          }
+
+          const normalized = normalizePlayback(data);
+
+          if(!normalized){
+            renderIdle("no hay una canción activa.");
+            return;
+          }
+
+          renderPlayback(normalized);
+        }catch(error){
+          console.error(error);
+          renderError(error);
+        }finally{
+          setLoading(false);
+        }
+      }
+
+      function startPolling(){
+        clearInterval(pollingTimer);
+
+        pollingTimer = setInterval(() => {
+          if(!document.hidden && readAuth()){
+            fetchPlayback({silent:true});
+          }
+        },10_000);
+      }
+
+      function disconnect(){
+        const name = connectedAccountName();
+        clearAuth({keepClientId:true});
+        ui.connectText.textContent = `La cuenta ${name} fue desconectada. Inicia sesión con Yhorbis para volver a vincularla.`;
+        show("connectView");
+      }
+
+      async function initializeMainWidget(){
+        ui.redirectUriLabel.textContent = REDIRECT_URI;
+        ui.clientIdInput.value = currentClientId();
+
+        if(location.protocol !== "https:"){
+          show("setupView");
+          ui.redirectUriLabel.textContent = "Sube primero el archivo a GitHub Pages para obtener una URI HTTPS.";
+          return;
+        }
+
+        if(!currentClientId()){
+          show("setupView");
+          return;
+        }
+
+        if(!readAuth()){
+          show("connectView");
+          return;
+        }
+
+        await fetchPlayback();
+        startPolling();
+      }
+
+      window.addEventListener("message",async event => {
+        if(event.origin !== window.location.origin) return;
+
+        if(event.data?.type === "yhorbis-spotify-auth-success"){
+          localStorage.setItem(CLIENT_ID_KEY,event.data.clientId);
+          saveAuth(event.data.auth);
+          ui.clientIdInput.value = event.data.clientId;
+          showToast(`Conectado: ${event.data.auth.profile?.display_name || "Yhorbis"}`);
+          await fetchPlayback();
+          startPolling();
+        }
+
+        if(event.data?.type === "yhorbis-spotify-auth-error"){
+          ui.connectText.textContent = event.data.message || "No se pudo conectar Spotify.";
+          show("connectView");
+        }
+      });
+
+      ui.copyRedirectButton.addEventListener("click",async () => {
+        await copyText(REDIRECT_URI);
+        showToast("Redirect URI copiada");
+      });
+
+      ui.saveAndConnectButton.addEventListener("click",() => {
+        const clientId = ui.clientIdInput.value.trim();
+
+        if(!validateClientId(clientId)){
+          showToast("Revisa el Client ID");
+          ui.clientIdInput.focus();
+          return;
+        }
+
+        localStorage.setItem(CLIENT_ID_KEY,clientId);
+        show("connectView");
+        beginPopupAuthorization();
+      });
+
+      ui.connectButton.addEventListener("click",beginPopupAuthorization);
+      ui.retryButton.addEventListener("click",() => fetchPlayback());
+      ui.disconnectButton.addEventListener("click",disconnect);
+      ui.idleDisconnectButton.addEventListener("click",disconnect);
+
+      document.addEventListener("visibilitychange",() => {
+        if(!document.hidden && readAuth()){
           fetchPlayback({silent:true});
         }
-      },10000);
-    }
+      });
 
-    ui.connectButton?.addEventListener("click",()=>{
-      window.open(WORKER_URL,"_blank","noopener");
-    });
+      window.addEventListener("focus",() => {
+        if(readAuth()){
+          fetchPlayback({silent:true});
+        }
+      });
 
-    ui.retryButton?.addEventListener("click",()=>{
-      fetchPlayback();
-    });
+      (async function boot(){
+        const params = new URLSearchParams(window.location.search);
+        const authMode = params.get("auth");
+        const code = params.get("code");
+        const returnedState = params.get("state");
+        const oauthError = params.get("error");
 
-    document.addEventListener("visibilitychange",()=>{
-      if(!document.hidden){
-        fetchPlayback({silent:true});
-      }
-    });
+        try{
+          if(authMode === "start"){
+            await runAuthPopupStart();
+            return;
+          }
 
-    window.addEventListener("focus",()=>{
-      fetchPlayback({silent:true});
-    });
+          if(oauthError){
+            throw new Error(
+              oauthError === "access_denied"
+                ? "La autorización fue cancelada."
+                : `Spotify devolvió el error: ${oauthError}.`
+            );
+          }
 
-    (async function init(){
-      await fetchPlayback();
-      startPolling();
+          if(code){
+            await exchangeAuthorizationCode(code,returnedState);
+            return;
+          }
+
+          await initializeMainWidget();
+        }catch(error){
+          console.error(error);
+
+          if(window.opener && !window.opener.closed){
+            window.opener.postMessage({
+              type:"yhorbis-spotify-auth-error",
+              message:error.message
+            },window.location.origin);
+
+            show("authStatus");
+            ui.authStatusTitle.textContent = "No se pudo conectar";
+            ui.authStatusText.textContent = error.message;
+          }else{
+            history.replaceState({},document.title,REDIRECT_URI);
+            renderError(error);
+          }
+        }
+      })();
     })();
   </script>
 </body>
